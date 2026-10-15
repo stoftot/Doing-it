@@ -59,10 +59,9 @@ Remove the AVD, then uninstall its system-image and emulator packages if unused.
 
 ## Rejected additions
 
-Do not add OpenHands, Prompt Master, Playwright MCP, Android Studio, Selenium,
-Appium, dotnet-monitor, dedicated security suites, another formatter/browser stack,
-or another debugger. No Headroom proxy/wrapper/interception/learning, Playwright
-agent skills, Firefox, or WebKit are enabled by this template.
+Do not add OpenHands, Prompt Master, Android Studio, Selenium, Appium, dotnet-monitor,
+dedicated security suites, another formatter stack, or another debugger. No Headroom
+proxy/wrapper/interception/learning is enabled by this template.
 
 Existing user-wide Codex plugins and IDE-bundled facilities belong to the user;
 they are not silently uninstalled by this template. See the verification report

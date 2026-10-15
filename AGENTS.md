@@ -35,7 +35,7 @@
 - Prefer repository search, filesystem inspection, and CLI when sufficient.
 - Use IDE semantics when symbol/project relationships are materially uncertain.
 - Use a source debugger when runtime state matters and cheaper evidence is insufficient.
-- Use browser tooling for actual browser behavior and device tooling for device behavior.
+- Use device tooling for actual device behavior.
 - Detect installed commands and currently exposed MCP capabilities before using them.
 - Tool descriptions are capability guides, not proof of installation or compatibility.
 - Optional tooling must not become a hard dependency of a core workflow.
@@ -126,5 +126,5 @@
 
 - Summarize what changed, why, and what was actually executed and observed.
 - Distinguish edited, compiled, tests passed, launched, reproduced, and behavior
-  verified in runtime/browser/device. Never imply a stronger level than observed.
+  verified in runtime/device. Never imply a stronger level than observed.
 - Name failures and unavailable checks with reasons and their practical impact.

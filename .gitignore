@@ -1,5 +1,4 @@
 .tooling/
-.playwright-cli/
 **/bin/
 **/obj/
 *.user

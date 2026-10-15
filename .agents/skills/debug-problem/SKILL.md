@@ -51,7 +51,6 @@ These are conditional routes, not dependencies of the core:
 | Failing test | Exact failure, test input and implementation; rerun a targeted case |
 | Unclear C# relationships | Search/config first; Rider MCP semantics if ambiguity remains and the .NET adapter exists |
 | Unclear .NET runtime state | Targeted logs/tests first; `netcoredbg-mcp` through the .NET adapter when runtime inspection matters |
-| Browser-only failure | Actual app state, Playwright CLI reproduction, console/network evidence through an applicable web adapter |
 | Android/device failure | Targeted `adb` logs, package/process/device inspection through the MAUI/Android adapter if present |
 | Running MAUI UI behavior | Device evidence; optional configured DevFlow for UI/app state, never as the source debugger |
 | Performance, hang, postmortem | Relevant measurements; optional installed .NET diagnostics through its adapter |

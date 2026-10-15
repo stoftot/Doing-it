@@ -1,35 +1,22 @@
 # .NET project facts
 
-Populate only for an applicable .NET project. Keep generic procedures in the
-`dotnet` skill; module activation belongs in PROJECT_BRIEF.
-
-## Solutions and projects
-
-| Fact | Project-specific value |
+| Fact | Value |
 | --- | --- |
-| Solution files | [TODO: paths] |
-| Main projects | [TODO: paths, responsibilities and output types] |
-| Test projects | [TODO: paths, frameworks and coverage relationships] |
-| Target frameworks | [TODO: actual TFMs] |
-| SDK selection | [TODO: global.json or actual SDK constraints] |
-| Project relationships | [TODO: references and relevant architecture links] |
+| Solution | `DoingIt.slnx` |
+| App | `src/DoingIt/DoingIt.csproj`, native Android executable |
+| Core | `src/DoingIt.Core/DoingIt.Core.csproj`, plain .NET class library |
+| Tests | `tests/DoingIt.Core.Tests/DoingIt.Core.Tests.csproj`, xUnit |
+| Frameworks | `net10.0-android` for app; `net10.0` for core/tests |
+| SDK | `global.json`: 10.0.402, latestPatch roll forward |
+| Relationships | App and tests reference core; core has no platform dependencies |
 
-## Canonical build / test targets
+## Canonical commands
 
-- **Restore/build:** [TODO: target and required options.]
-- **Tests:** [TODO: test targets and useful filters.]
-- **Configuration/platform:** [TODO: actual supported values.]
-- **Formatting:** [TODO: target and applicable configuration.]
+- Android restore/build: `./tooling/build-android.ps1` (PowerShell 7); defaults Debug. Includes the native resource packager's Windows Unicode-path workaround.
+- Core tests: `dotnet test tests/DoingIt.Core.Tests/DoingIt.Core.Tests.csproj`.
+- Formatting: `dotnet format DoingIt.slnx --verify-no-changes` (installed Android workload required to load the application project).
+- Application entry: `DoingIt.App.CreateWindow`, selected by `MauiProgram` and the Android MainApplication.
 
-## Launchable projects
+Only the app requires `maui-android`, JDK 21, and the Android SDK. `Microsoft.Maui.Controls` follows the installed workload's MauiVersion. No web framework or server is used. See [MAUI_ANDROID](MAUI_ANDROID.md) for deployment.
 
-[TODO: entry projects, arguments and environment prerequisites.]
-
-## Special build assumptions
-
-[TODO: feeds, generated inputs, workloads, native dependencies and build ordering.]
-
-## Optional diagnostics / static analysis
-
-[TODO: intentionally configured InspectCode or diagnostics tools, or None after
-verification. Documentation alone does not establish current tool availability.]
+No application-specific performance or source-debugger instrumentation is configured. Optional local debugger and IDE tooling follows [tooling](../../tooling.md); its availability is not required to run core tests.

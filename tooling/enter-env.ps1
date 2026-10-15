@@ -1,4 +1,4 @@
-param([ValidateSet('core','dotnet','web','maui')][string[]]$Modules = @('core','dotnet','web','maui'))
+param([ValidateSet('core','dotnet','maui')][string[]]$Modules = @('core','dotnet','maui'))
 # Dot-source this script. Changes affect only this PowerShell process and children.
 $toolingRoot = Join-Path (Split-Path $PSScriptRoot -Parent) '.tooling'
 foreach ($module in $Modules) {
@@ -10,12 +10,6 @@ foreach ($module in $Modules) {
                 $env:NETCOREDBG_PATH = "$toolingRoot/dotnet/$engine/netcoredbg/netcoredbg.exe"
                 $env:PATH = "$toolingRoot/dotnet/venv/Scripts;$env:PATH"
             }
-        }
-        web {
-            $env:PLAYWRIGHT_BROWSERS_PATH = "$toolingRoot/web/browsers"
-            $env:PATH = "$toolingRoot/web/node_modules/.bin;$env:PATH"
-            $localNode = Get-ChildItem "$toolingRoot/web/node" -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-            if ($localNode) { $env:PATH = "$($localNode.FullName);$env:PATH" }
         }
         maui {
             foreach ($setting in @('JAVA_HOME','ANDROID_HOME')) {

@@ -1,20 +1,15 @@
 # Decisions
 
-Record only actual durable, non-obvious architectural choices. Do not use this
-file as a changelog, task history or debugging journal. Preserve rationale for
-superseded decisions with an explicit replacement reference.
+## D001: Native Android presentation with independent planner core
 
-## Entry template
+- **Status:** Accepted implementation choice under the native MAUI Android request.
+- **Decision:** Use C# MAUI controls and a plain .NET core library; no Blazor, WebView, web project, or server.
+- **Rationale:** Native forms and Android lifecycle behavior meet the requested platform; an independent core permits fast recurrence/storage tests without a device.
+- **Consequences:** UI behavior still needs Android checks; the core tests cannot establish layout or navigation correctness.
 
-Copy this entry when an actual decision needs recording:
+## D002: Local snapshot storage and derived recurring occurrences
 
-```markdown
-## DNNN: [TODO: decision title]
-
-- **Status:** [TODO: Proposed / Accepted / Superseded by DNNN]
-- **Context:** [TODO: constraints and problem requiring a decision]
-- **Decision:** [TODO: chosen approach]
-- **Rationale:** [TODO: why, including meaningful alternatives/tradeoffs]
-- **Consequences:** [TODO: benefits, costs and implications]
-- **Affected areas:** [TODO: components and links]
-```
+- **Status:** Accepted initial implementation choice.
+- **Decision:** Store versioned JSON atomically in app-private storage. Derive occurrences from recurrence rules and store completion by routine ID/date rather than pre-generating future tasks.
+- **Rationale:** A personal offline planner needs little data and no database/service dependencies. Derived occurrences avoid background scheduling and duplicate tasks after restarts.
+- **Consequences:** No cross-device sync. Editing rules changes what appears on past dates too; completion history is retained for matching dates. Short months skip missing dates. Uninstall may remove data. The `.bak` is the previous successful save, not an external backup service.

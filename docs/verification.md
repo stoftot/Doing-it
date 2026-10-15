@@ -17,7 +17,6 @@ Get-Content tooling/verify-codex.md -Raw |
     -o .tooling/codex-verification.md - > .tooling/codex-verification.jsonl
 python tooling/verify-codex-evidence.py
 python tooling/verify-config.py
-python tooling/verify-browser.py
 ```
 
 For MAUI, create a scratch project with `dotnet new maui`, restrict its scratch

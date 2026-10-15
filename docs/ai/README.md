@@ -68,10 +68,9 @@ preserved unless facts changed.
 | Adapter / fact file | Scope | Dependency |
 | --- | --- | --- |
 | `dotnet` / `DOTNET.md` | C#/.NET, formatting, Rider semantics, source debugger | None on another adapter |
-| `aspnet-web` / `ASPNET.md` | ASP.NET launch and real-browser evidence | .NET adapter |
 | `maui-android` / `MAUI_ANDROID.md` | MAUI build, deployment, device/runtime investigation | .NET adapter |
 
-All three pairs are supplied; application activation is recorded in the brief.
+The retained pairs are supplied; application activation is recorded in the brief.
 Fill the applicable module's facts from actual project/build/launch configuration.
 Keep generic procedures in its skill. Optional tools such as InspectCode,
 diagnostics, DevFlow, and an emulator are detected before use and never required
@@ -84,18 +83,17 @@ by core workflows. Missing tools produce bounded fallbacks and explicit gaps.
 2. Remove its enabled-module entry from the brief and any concrete project/map
    references that no longer apply. This README's catalog describes optional pairs;
    core procedures always test for applicability and presence.
-3. ASP.NET and MAUI can each be removed independently. Removing .NET also means
-   removing those dependent adapters, or first rewriting them for a different
-   explicitly supported base. All core skills remain useful on their own.
+3. MAUI can be removed independently. Removing .NET also means removing its
+   dependent adapter, or first rewriting it for a different explicitly supported
+   base. All core skills remain useful on their own.
 4. If removing installed tools too, follow [tooling removal](../tooling.md#clean-removal).
    Regenerate MCP configuration before deleting required servers; preserve shared
    machine installations. Removing documentation alone does not uninstall tools.
 
-The existing external `web` installer supports standalone browser tooling; that
-does not change the ASP.NET adapter's conceptual dependency on .NET. The supplied
-MCP configuration requires some selected servers at startup; this is a toolchain
-profile choice, not a core skill dependency. Configure only retained servers when
-adopting the neutral core. Do not carry an unavailable required server into it.
+The supplied MCP configuration requires some selected servers at startup; this is
+a toolchain profile choice, not a core skill dependency. Configure only retained
+servers when adopting the neutral core. Do not carry an unavailable required server
+into it.
 
 ## Releases and extension
 

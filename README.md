@@ -1,38 +1,43 @@
-# AI-assisted development repository template
+# Doing it
 
-Repository-resident AI guidance and a modular external toolchain for Codex on
-Windows x64. This template contains no application.
+A native .NET MAUI Android to-do app. Teal (`#1D4C5E`) and blush (`#D5BBB1`), a quiet place for today's tasks, everyday lists, and recurring routines.
 
-Start with the [AI development guide](docs/ai/README.md) and
-[project map](docs/ai/PROJECT_MAP.md). Use `$initialize-project` to adopt an existing
-application or define a new one. The [release policy](docs/ai/RELEASES.md) governs
-completed, validated, version-worthy outcomes.
+- **Home:** today's dated tasks and active routines, followed by General and your custom lists. Completed tasks are hidden; each section's **done** button opens a popup with Undo.
+- **Recurring:** create, edit, pause, and resume daily, weekly, and monthly routines. Weekly schedules select weekdays; monthly schedules select days and months. Nonexistent dates are skipped.
+- **Lists:** create tasks and named lists. General is permanent. Removing a custom list moves its tasks into General.
+- **Calendar:** shared month/week view from Home and Lists, with task creation, editing, completion, and undo for the selected date.
 
-- **Core:** explicit Headroom compression and retrieval over MCP.
-- **.NET:** .NET 10, built-in `dotnet format`, Rider MCP, NetCoreDbg and its MCP controller.
-- **Web:** Microsoft Playwright CLI and Chromium.
-- **MAUI Android:** workload, Microsoft OpenJDK 21, Android SDK and adb.
+A task belongs to either a list or one calendar date. List tasks stay in that list; dated tasks appear only on their date. Each recurring occurrence has its own completion state. Routines start on their creation date. Editing a routine changes its schedule from that start date; completion records are retained for matching dates.
 
-Start with [setup and removal](docs/tooling.md), [verification procedure](docs/verification.md),
-and [optional modules](docs/optional-tools.md).
+Everything is stored locally in the app's private data directory as `planner.json`, with an atomic replacement and previous-save `.bak`. No account or server is needed. There are no notifications, cloud sync, or web UI. Uninstalling the app can remove local data.
 
-From the repository root, in PowerShell 7:
+## Build and run
+
+Requires the .NET 10 SDK selected by `global.json`, `maui-android` workload, JDK 21 and Android SDK. See [tooling setup](docs/tooling.md) for the retained native tooling. No iOS, Windows, ASP.NET, or Blazor targets are included.
+
+From PowerShell 7 at the repository root:
 
 ```powershell
-./tooling/setup.ps1 -Modules core,dotnet,web,maui
-./tooling/configure.ps1 -Modules core,dotnet,rider
-. ./tooling/enter-env.ps1
-codex
+./tooling/build-android.ps1
+
+dotnet test tests/DoingIt.Core.Tests/DoingIt.Core.Tests.csproj
+
+adb devices -l
+adb -s <device-serial> install -r src/DoingIt/bin/Debug/net10.0-android/com.doingit.app-Signed.apk
+adb -s <device-serial> shell monkey -p com.doingit.app -c android.intent.category.LAUNCHER 1
 ```
 
-When copying or moving this template, use the
-[relocation procedure](docs/tooling.md#copying-or-moving-the-template);
-`$initialize-project` now checks local tooling as part of initialization.
+`build-android.ps1` imports the local SDK environment and temporarily maps a free drive letter when Windows paths contain non-ASCII characters. This avoids Android AAPT2's Unicode-path limitation without moving source. The mapping is removed after the build. `-Configuration Release` builds the release configuration; distribution signing is separate.
 
-Inspect existing installations before running setup on another machine. Installers
-resolve current official releases; installed package receipts stay in ignored
-`.tooling/`. Machine installers require an elevated PowerShell. Never infer a
-successful setup from installation alone: follow the functional verification guide.
+The app targets Android API 36 with Android 6.0 (API 23) as its minimum. Debug APKs embed their assemblies so they can be installed directly with adb. The application ID is `com.doingit.app`.
 
-For a technology-neutral repository, select only `core` in both setup and configure.
-The web module can be used independently of .NET and MAUI.
+## Source and checks
+
+- [Project map](docs/ai/PROJECT_MAP.md) and [architecture](docs/ai/ARCHITECTURE.md).
+- `src/DoingIt`: native MAUI pages and Android entry point.
+- `src/DoingIt.Core`: scheduling, validation, and local persistence, independent of MAUI.
+- `tests/DoingIt.Core.Tests`: deterministic scheduling and storage tests.
+- [Device regression cases](tests/manual/planner.md).
+- [Pending release](releases/0.1.0.md).
+
+The repository retains the [.NET and MAUI development workflows](docs/ai/README.md). Shared machine tools are managed separately from this project.

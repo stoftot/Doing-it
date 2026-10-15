@@ -38,7 +38,6 @@ Do not require tools or adapters that the project does not use.
 | Documentation / workflow | Correct links/metadata, coherent ownership and scenarios, no invented facts |
 | Formatting / style | Applicable formatter/static checks; do not add meaningless behavior tests |
 | Internal C# logic (when applicable) | Targeted tests and relevant build |
-| ASP.NET UI interaction (when applicable) | Relevant automated tests plus real app/browser interaction |
 | MAUI device behavior (when applicable) | Build, relevant tests and actual target/runtime evidence |
 | Runtime bug | Repeat original failing scenario and appropriate regression checks |
 

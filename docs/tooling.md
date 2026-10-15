@@ -15,7 +15,6 @@ Select only needed modules; tool availability is verified on the destination.
 | Core | Headroom MCP in a local Python environment |
 | .NET | .NET 10 SDK, SDK formatter, NetCoreDbg and its Python MCP controller |
 | Rider | Optional IDE semantic/project integration |
-| Web | Node.js, Microsoft Playwright CLI and Chromium |
 | MAUI/Android | Workload, shared JDK 21, Android SDK and adb |
 
 Installed package receipts belong in ignored local tooling directories. Do not
@@ -101,7 +100,7 @@ recreate them at the destination rather than editing `pyvenv.cfg` or embedded
 launcher paths. They contain tool dependencies, not application source.
 
 **For a clean copy:** copy the template source and omit ignored `.tooling/`,
-`.idea/`, `.playwright-cli/`, build outputs and Python caches. Inspect/reuse compatible
+`.idea/`, build outputs and Python caches. Inspect/reuse compatible
 machine installations, then provision only the selected tools through the existing
 setup flow. A new machine still needs the documented host prerequisites. If exact
 Python package versions matter, retain the relevant `installed.txt` receipts
@@ -168,11 +167,9 @@ from the source machine do not prove the destination works.
 2. Run selected module scripts through `tooling/setup.ps1`. Downloaded tools stay
    in ignored `.tooling/` directories or the shared SDK/JDK locations. The module scripts
    reuse their existing environments; SDK setup skips the already-current SDK.
-   On a different machine with compatible global MCP/browser/JDK tools, configure
+   On a different machine with compatible global MCP/JDK tools, configure
    launchers to use those before installing isolated copies. The inspection output
    is not an automatic adoption of arbitrary existing installations.
-   If supported Node LTS is missing, the web installer downloads a checksum-verified
-   official Windows x64 LTS ZIP into its own module; it does not create a Node app.
 3. Re-run the corresponding module script to update. It resolves official stable
    metadata at execution time, then installs a specific version. JDK and SDK
    downloads verify vendor checksums. Re-run discovery and acceptance after updates.
@@ -196,7 +193,7 @@ actually composes the selected fragments.
 
 ## Clean removal
 
-First stop only this project's browser/debugger sessions and close any relevant
+First stop only this project's debugger sessions and close any relevant
 IDE project. Run `configure.ps1` with the modules you are keeping **before** deleting
 tools, so no stale required MCP entry breaks startup.
 
@@ -204,7 +201,6 @@ tools, so no stale required MCP entry breaks startup.
 |---|---|---|
 | .NET and all technology layers | `configure.ps1 -Modules core` | Remove selected local tool environments; preserve shared SDK/JDK installations |
 | MAUI only | MCP config unchanged | Remove project-specific support; uninstall shared workload/SDK/JDK or Rider support only if unused by all projects |
-| Web only | MCP config unchanged | Remove `.tooling/web`; no application npm manifest was created |
 | Rider integration | Configure `core,dotnet` | Disable Rider MCP in IDE settings if no other projects use it; no global Codex registration to remove |
 | Debugger only | Configure `core,rider` | Remove `.tooling/dotnet`; keep the shared SDK/Rider |
 | Core | Configure only remaining modules | Remove `.tooling/core`; remove Headroom-owned session data from its user data directory if no other installation uses it |
@@ -215,6 +211,6 @@ this template. If deliberately removing .NET 10 machine-wide, use Windows Instal
 apps. Preserve other installed SDK versions. Remove user environment variables or
 Rider paths only when the corresponding shared installations are actually removed.
 
-`tooling/clean-verification.ps1` removes only this template's scratch fixtures and
-browser artifacts after checking paths. Local receipts and transient verification artifacts stay in ignored storage; do
+`tooling/clean-verification.ps1` removes only this template's scratch fixtures after
+checking paths. Local receipts and transient verification artifacts stay in ignored storage; do
 not populate this template with machine-specific result reports.

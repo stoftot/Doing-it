@@ -1,44 +1,35 @@
 # Project Brief
 
-## Project summary
+## Purpose and users
 
-[TODO: project name, purpose and the problem it solves.]
+Doing it is a personal Android to-do app for organizing today's tasks, persistent lists, and recurring routines. The UI follows the supplied rounded-card sketches with teal `#1D4C5E` and blush `#D5BBB1`.
 
-## Goals
+## Goals and capabilities
 
-- [TODO: concrete goals and success criteria.]
+- Three bottom navigation destinations: Home, Recurring, and Lists.
+- Home contains tasks for the local calendar date plus all personal lists.
+- Task completion hides active rows; completed popups support Undo.
+- Daily, selected-weekday, and selected-day/selected-month recurrence; routines can be edited or paused.
+- Shared month/week calendar for dated tasks and routine occurrences.
+- Permanent General list, custom named lists, task/list editing.
+- Data survives app restarts and is available offline.
 
-## Non-goals
+## Constraints and non-goals
 
-- [TODO: explicit scope exclusions.]
-
-## Primary users and use cases
-
-- [TODO: intended users and their main workflows.]
-
-## Major capabilities
-
-- [TODO: major application capabilities.]
-
-## Important constraints
-
-- [TODO: platforms, deployment, offline/storage, time and budget constraints.]
+Native .NET MAUI Android only. No web development, server, account, synchronization, notifications, or iOS/desktop targets in this version. All data is local to the Android app. Dates use the phone's local calendar; there are no times of day or time zones attached to tasks.
 
 ## Enabled technology modules
 
-[TODO: choose the applicable modules; the presence of tooling does not select
-application technologies. Remove unused entries.]
-
-| Module | Enabled? | Project facts |
+| Module | Enabled | Facts |
 | --- | --- | --- |
-| .NET | [TODO] | `modules/DOTNET.md`, if retained |
-| ASP.NET | [TODO] | `modules/ASPNET.md`, if retained; depends on .NET |
-| MAUI/Android | [TODO] | `modules/MAUI_ANDROID.md`, if retained; depends on .NET |
+| .NET | Yes | [DOTNET](modules/DOTNET.md) |
+| MAUI/Android | Yes | [MAUI_ANDROID](modules/MAUI_ANDROID.md) |
 
-## Known assumptions
+## Product choices
 
-- [TODO: important assumptions and how to resolve them.]
+- Dated tasks and list tasks are mutually exclusive.
+- Recurring tasks start on their creation date. Missing monthly dates are skipped.
+- Removing custom lists moves their tasks to General, preserving completion state.
+- English UI, light palette, local-only storage. These are initial implementation choices, not requirements for future versions.
 
-## Current project status
-
-[TODO: actual project status, if useful. Do not use this section as a task log.]
+The root [README](../../README.md) owns current usage and build instructions.

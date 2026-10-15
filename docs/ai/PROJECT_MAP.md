@@ -1,50 +1,34 @@
 # Project Map
 
-## Repository at a glance
-
-[TODO: a short orientation based on the actual project. Proposed paths must be
-marked as proposed until they exist.]
-
-## Main areas
-
-| Path | Role | Important relationships |
-| --- | --- | --- |
-| [TODO: major area] | [TODO: responsibility] | [TODO: related areas] |
-
-## Projects / packages
-
-| Project | Type | Responsibility | Depends on | Tests |
-| --- | --- | --- | --- | --- |
-| [TODO: project] | [TODO: type] | [TODO: responsibility] | [TODO: dependencies] | [TODO: tests] |
-
-## Entry points
-
-| Purpose | Path |
+| Path | Responsibility |
 | --- | --- |
-| [TODO: launch/startup purpose] | [TODO: actual path] |
+| `DoingIt.slnx`, `global.json` | Solution and .NET SDK selection |
+| `src/DoingIt/DoingIt.csproj` | Android-only native MAUI application |
+| `src/DoingIt/App.cs`, `MauiProgram.cs` | Window, persistent store, startup and fonts |
+| `src/DoingIt/Pages/MainPage.cs` | Home, Recurring, Lists, completion popup and list management |
+| `src/DoingIt/Pages/TaskEditorPage.cs` | Mutually exclusive date/list task form |
+| `src/DoingIt/Pages/RecurringEditorPage.cs` | Daily, weekly and monthly schedule form |
+| `src/DoingIt/Pages/CalendarPage.cs` | Shared month/week calendar and dated task actions |
+| `src/DoingIt/Pages/EditorPage.cs` | Shared save/error/modal form handling |
+| `src/DoingIt/Ui.cs`, `Resources/` | Palette, native UI building blocks, fonts and vector icons |
+| `src/DoingIt/Platforms/Android/` | Android activity, manifest and theme |
+| `src/DoingIt.Core/` | Domain records, date queries, validation and atomic JSON storage |
+| `tests/DoingIt.Core.Tests/` | xUnit domain and file-storage regression tests |
+| `tests/manual/planner.md` | Reusable Android interaction cases |
+| `tooling/build-android.ps1` | Native Android build with Windows Unicode-path workaround |
+| `releases/` | Project release outcomes |
 
-## Test layout
+Dependency direction: `DoingIt` and `DoingIt.Core.Tests` reference `DoingIt.Core`; the core has no MAUI dependency.
 
-| Production area | Test location |
-| --- | --- |
-| [TODO: production area] | [TODO: corresponding tests] |
+## Flows and investigation anchors
 
-## Important flows
+- Launch: Android MainActivity -> MauiProgram -> App -> PlannerStore.LoadAsync -> MainPage.
+- Mutation: page action -> PlannerStore validation -> atomic file save -> new Data snapshot -> page refresh.
+- Scheduled view: PlannerQueries.ForDate combines exact-date tasks and active recurrence rules; completion is keyed by routine ID and date.
+- Views refresh when modal editors close and Home's local date changes/resumes.
 
-- [TODO: key end-to-end flows and useful investigation anchors.]
+## Generated and external areas
 
-## Generated / external areas
+`bin/`, `obj/`, `.tooling/`, and `.idea/` are ignored local/generated areas. App data belongs to Android private storage, not the source tree. Shared Android SDK/JDK/.NET installations belong to the machine.
 
-- [TODO: generated output, caches, vendored dependencies and their owners.]
-
-## Where to read next
-
-| If working on... | Read... |
-| --- | --- |
-| Purpose and scope | [PROJECT_BRIEF](PROJECT_BRIEF.md) |
-| Structure and rationale | [ARCHITECTURE](ARCHITECTURE.md), [DECISIONS](DECISIONS.md) |
-| Repository conventions | [CONVENTIONS](CONVENTIONS.md) |
-| Technology-specific work | Applicable module fact file and adapter, if retained |
-| Release-worthy outcomes | [RELEASES](RELEASES.md) |
-
-Keep this map curated; do not turn it into a complete file inventory.
+Read [PROJECT_BRIEF](PROJECT_BRIEF.md) for scope, [ARCHITECTURE](ARCHITECTURE.md) for invariants, [CONVENTIONS](CONVENTIONS.md) for editing conventions, and the [.NET](modules/DOTNET.md) / [Android](modules/MAUI_ANDROID.md) facts for execution.

@@ -39,8 +39,7 @@ from a template/specification generation label or invent a historical baseline.
   Record a known external baseline here if not represented in local records;
   if evidence conflicts or is unknown, resolve that before assigning a next version.
 
-**External released baseline:** [TODO: confirmed version and evidence link for
-an existing project, or None when initializing a genuinely new project.]
+**External released baseline:** None; Doing it is a new project.
 
 ## Invariants and schema
 
