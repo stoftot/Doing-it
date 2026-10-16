@@ -21,7 +21,16 @@ From PowerShell 7 at the repository root:
 ./tooling/build-android.ps1
 
 dotnet test tests/DoingIt.Core.Tests/DoingIt.Core.Tests.csproj
+```
 
+For shared emulator tests, follow [AndroidTesting integration](docs/android-testing.md).
+It uses the existing environment and reserved runner; a Doing it UI suite still
+needs implementation and runtime validation. The default Settings smoke is not
+an app regression test.
+
+For a separately coordinated, authorized physical phone (not a reserved emulator):
+
+```powershell
 adb devices -l
 adb -s <device-serial> install -r src/DoingIt/bin/Debug/net10.0-android/com.doingit.app-Signed.apk
 adb -s <device-serial> shell monkey -p com.doingit.app -c android.intent.category.LAUNCHER 1
@@ -38,6 +47,7 @@ The app targets Android API 36 with Android 6.0 (API 23) as its minimum. Debug A
 - `src/DoingIt.Core`: scheduling, validation, and local persistence, independent of MAUI.
 - `tests/DoingIt.Core.Tests`: deterministic scheduling and storage tests.
 - [Device regression cases](tests/manual/planner.md).
+- [Shared Android test integration](docs/android-testing.md) and [verification scope](docs/verification.md#android-project-verification).
 - [Pending release](releases/0.1.0.md).
 
 The repository retains the [.NET and MAUI development workflows](docs/ai/README.md). Shared machine tools are managed separately from this project.

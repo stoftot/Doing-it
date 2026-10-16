@@ -1,6 +1,8 @@
 # Planner device regression cases
 
-Use a test installation of the Android app. Dates in these cases are relative to the device's current local date. Give each created item a distinctive `QA` prefix, and remove it after the case unless a later case explicitly uses it. Clearing app data is appropriate only for the dedicated test installation.
+Use a test installation of the Android app. Dates in these cases are relative to the device's current local date. Give each created item a distinctive, run-unique `QA` prefix, and remove only that run's items after the case unless a later case explicitly uses them. Account for pre-existing items when checking counts; do not delete earlier `QA` data unless ownership is established. Clearing app data requires separate explicit authorization even for a dedicated test installation; never reset shared data automatically to satisfy a case.
+
+Follow [shared Android integration](../../docs/android-testing.md) for emulator reservations, suite/session ownership and diagnostics. These are manual specifications, not an existing Appium harness. Preserve shared services and report unmet preconditions/skipped cases. Use a separately coordinated physical phone for OEM behavior; Google APIs emulator evidence does not establish Nothing OS coverage.
 
 ## PLANNER-001 — First launch and main navigation
 
@@ -8,7 +10,7 @@ Use a test installation of the Android app. Dates in these cases are relative to
 Confirm a fresh planner has its permanent list and all three main sections are reachable.
 
 ### Preconditions
-- Clear the dedicated test installation's app data, then launch the app.
+- Use an already empty dedicated test installation, or separately obtain explicit authorization to clear only that installation's app data. Otherwise skip the fresh-state assertions and report the unmet precondition. Launch the app.
 
 ### Steps
 1. Observe Home and its Today's tasks and Your lists sections.
@@ -27,7 +29,7 @@ Confirm a fresh planner has its permanent list and all three main sections are r
 Verify list names, management controls, task migration, and protection of General.
 
 ### Preconditions
-- Open Lists in a test installation containing only General, or remove earlier `QA` lists first.
+- Open Lists in a test installation containing only General, or account for existing lists and use unique test names. Remove earlier fixtures only if they belong to this run.
 
 ### Steps
 1. Tap `+ New list`, enter `QA Errands`, and tap Create.

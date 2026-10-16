@@ -4,6 +4,28 @@ This is the tooling half of the [AI-assisted development template](ai/README.md)
 It owns installation, configuration and tool acceptance. The repository guidance
 and skills define how agents select these capabilities during development.
 
+## Shared AndroidTesting in this project
+
+Doing it explicitly opts into the existing shared Windows AndroidTesting tool.
+Follow [project integration](android-testing.md) for portable discovery through
+`ANDROID_TESTING_HOME` or the known host-specific fallback, revision review,
+existing-device selection and reserved test execution. The shared README is the
+authority for its scripts/configuration; the root AGENTS.md owns our single marker.
+SDK/JDK discovery in `enter-env.ps1` and the app's Unicode-safe build wrapper remain
+in place. Core xUnit tests still run independently of this optional device service.
+
+For this established project's Android work, reuse installed tools and report
+external problems. The template provisioning/update/removal procedures below are
+not authorization to alter this shared environment. Do not run
+`setup.ps1 -Modules maui`, `modules/maui.ps1` or `update-android.ps1` as an AndroidTesting preflight;
+they can install/update shared dependencies and the updater stops ADB. Do not copy
+central scripts/config/presets here or install a second Appium/driver/SDK/emulator.
+No MCP entry or always-running service is required for the shared runner.
+
+Documentation validation is static plus read-only revision checks. Shared live
+checks, services and device runs belong only to actual authorized runtime work;
+see [verification](verification.md#android-project-verification).
+
 ## Scope
 
 These scripts target Windows x64 and require PowerShell 7, Python 3.11+ and an
@@ -15,7 +37,7 @@ Select only needed modules; tool availability is verified on the destination.
 | Core | Headroom MCP in a local Python environment |
 | .NET | .NET 10 SDK, SDK formatter, NetCoreDbg and its Python MCP controller |
 | Rider | Optional IDE semantic/project integration |
-| MAUI/Android | Workload, shared JDK 21, Android SDK and adb |
+| MAUI/Android | Existing workload, shared JDK 21, Android SDK/adb; external AndroidTesting runner/Appium for emulator UI tests |
 
 Installed package receipts belong in ignored local tooling directories. Do not
 store machine-specific acceptance results or installed-version snapshots in this
@@ -162,6 +184,9 @@ from the source machine do not prove the destination works.
 
 ## Install, update and reuse
 
+These retained template provisioning procedures require a separate setup/update
+task. The shared AndroidTesting boundary above takes precedence for this project.
+
 1. Inspect `Get-Command` results, `dotnet --info`, `dotnet workload list`, existing
    JDK/Android paths and Rider version first.
 2. Run selected module scripts through `tooling/setup.ps1`. Downloaded tools stay
@@ -200,7 +225,7 @@ tools, so no stale required MCP entry breaks startup.
 | Remove | Keep/configuration action | Installation cleanup |
 |---|---|---|
 | .NET and all technology layers | `configure.ps1 -Modules core` | Remove selected local tool environments; preserve shared SDK/JDK installations |
-| MAUI only | MCP config unchanged | Remove project-specific support; uninstall shared workload/SDK/JDK or Rider support only if unused by all projects |
+| MAUI only | MCP config unchanged | Remove project-specific support only; preserve shared AndroidTesting and workload/SDK/JDK/Rider installations |
 | Rider integration | Configure `core,dotnet` | Disable Rider MCP in IDE settings if no other projects use it; no global Codex registration to remove |
 | Debugger only | Configure `core,rider` | Remove `.tooling/dotnet`; keep the shared SDK/Rider |
 | Core | Configure only remaining modules | Remove `.tooling/core`; remove Headroom-owned session data from its user data directory if no other installation uses it |

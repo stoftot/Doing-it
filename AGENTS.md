@@ -122,6 +122,42 @@
   facts and procedures only as needed. The core remains technology-neutral.
 - Removing a module must not require installing its tools to use the core.
 
+## Shared Android testing (this repository)
+
+This project explicitly opts into the shared Windows AndroidTesting environment.
+Before Android build/deploy/UI testing, resolve `ANDROID_TESTING_HOME` (process,
+then user environment); if unset, the known host-specific location is
+`C:\Users\chris\DevTools\AndroidTesting`. Read its entire `README.md`, `version.json`
+and relevant `CHANGELOG.md` entries. Follow [project integration](docs/android-testing.md)
+and [Android facts](docs/ai/modules/MAUI_ANDROID.md). Other hosts need their own
+verified installation; a missing/invalid configured path is an error, not a reason
+to install tools or silently select another installation.
+
+AndroidTestingReviewedRevision: UNREVIEWED
+
+- Keep this as the single review marker. No previous review is claimed by
+  `UNREVIEWED`: use `Get-AndroidTestingChanges.ps1` and its explicit
+  `-SinceRevision 0` full-history query. For a valid recorded integer, query changes
+  with that exact `-SinceRevision` value when it differs from current. Investigate
+  invalid/future values and mismatched installations; never lower the marker to
+  hide a discrepancy. Review useful improvements even if older commands still work.
+- Advance the marker only after relevant review and appropriate validation;
+  recheck the current revision immediately before recording completion and review
+  any intervening entries. Preserve the previous value while required validation
+  is incomplete. The project UI harness and reserved runner validation described
+  in [verification](docs/verification.md#android-project-verification) remain pending.
+- Reuse existing devices. Use `Invoke-AndroidTests.ps1` for coordinated emulator
+  tests with explicit app assertions, worker sessions and allocated ports. Keep
+  tests, app IDs and any future device-selection config here. Do not create devices
+  automatically, bypass reservations, reset/delete data, or stop shared services
+  as routine startup/cleanup. Physical phones need the separate documented route.
+- Only modify this repository for project integration. Never modify, copy into
+  this repository, install, upgrade, repair or relocate the shared implementation,
+  configuration, presets, metadata or documentation. Do not install duplicate
+  SDK/JDK/emulator/Appium/driver tooling. Report external-tool problems to the user.
+- Documentation maintenance uses static inspection and read-only revision checks;
+  do not launch services or change shared state merely to validate instructions.
+
 ## Report completion precisely
 
 - Summarize what changed, why, and what was actually executed and observed.

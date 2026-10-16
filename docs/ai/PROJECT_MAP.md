@@ -16,6 +16,7 @@
 | `tests/DoingIt.Core.Tests/` | xUnit domain and file-storage regression tests |
 | `tests/manual/planner.md` | Reusable Android interaction cases |
 | `tooling/build-android.ps1` | Native Android build with Windows Unicode-path workaround |
+| `docs/android-testing.md` | Shared AndroidTesting discovery, device/session ownership and project UI integration contract |
 | `releases/` | Project release outcomes |
 
 Dependency direction: `DoingIt` and `DoingIt.Core.Tests` reference `DoingIt.Core`; the core has no MAUI dependency.

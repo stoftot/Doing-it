@@ -45,21 +45,23 @@ screenshot or logging calls actually needed, set output caps, then verify on a
 device. It does not replace source debugging with NetCoreDbg. Remove its MCP entry
 before uninstalling its CLI and any explicitly added application instrumentation.
 
-## Android emulator
+## Shared Android emulator and Appium
 
-An emulator or system image is not required by the base module. A physical device and adb are sufficient
-for the base module. To opt in, use the SDK manager to install `emulator` and a
-compatible `system-images;android-36;google_apis;x86_64` image, accept its license,
-create an AVD with `avdmanager`, and verify hardware acceleration and `adb devices`.
-Use `sdkmanager --help`, `avdmanager --help`, and `emulator -help` for installed-version
-syntax. Google's current Android CLI documents Windows emulator-command limitations,
-so use the emulator executable directly where necessary.
-[Official emulator documentation](https://developer.android.com/studio/run/emulator-commandline).
-Remove the AVD, then uninstall its system-image and emulator packages if unused.
+This project opts into the already installed AndroidTesting environment; see
+[integration](android-testing.md) for discovery, review and reserved runner usage.
+Reuse `MAUI_Shared_Android` unless existing project-owned devices are explicitly
+configured later. Do not create devices automatically or install another SDK,
+emulator, system image, Appium server or UiAutomator2 driver. Device creation,
+reset/deletion and shared-tool maintenance are not project startup/cleanup actions.
+Report external setup gaps without repairing the shared installation here.
+
+The runner currently supports emulator serials only. A separately coordinated
+physical phone remains valid for manual tests and actual OEM coverage. The API 36
+Google APIs image with Nothing Phone display settings does not run Nothing OS.
 
 ## Rejected additions
 
-Do not add OpenHands, Prompt Master, Android Studio, Selenium, Appium, dotnet-monitor,
+Do not add OpenHands, Prompt Master, Android Studio, Selenium, duplicate Appium tooling, dotnet-monitor,
 dedicated security suites, another formatter stack, or another debugger. No Headroom
 proxy/wrapper/interception/learning is enabled by this template.
 
