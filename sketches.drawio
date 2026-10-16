@@ -1,0 +1,150 @@
+<mxfile host="Electron" pages="5">
+  <diagram name="Home" id="UiSPGmsBvxdy0Hw_jpqc">
+    <mxGraphModel dx="1178" dy="729" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="iP6uekgT9tcNDj09ksBY-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="600" width="360" x="240" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="iP6uekgT9tcNDj09ksBY-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="navigation bar" vertex="1">
+          <mxGeometry height="50" width="340" x="250" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="iP6uekgT9tcNDj09ksBY-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Todays tasks" vertex="1">
+          <mxGeometry height="30" width="60" x="390" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="iP6uekgT9tcNDj09ksBY-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="230" width="280" x="280" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="iP6uekgT9tcNDj09ksBY-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="50" width="280" x="280" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="iP6uekgT9tcNDj09ksBY-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="General tasks" vertex="1">
+          <mxGeometry height="30" width="60" x="390" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="iP6uekgT9tcNDj09ksBY-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="List 2" vertex="1">
+          <mxGeometry height="60" width="280" x="280" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="iP6uekgT9tcNDj09ksBY-11" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Home" vertex="1">
+          <mxGeometry height="30" width="60" x="392" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="iP6uekgT9tcNDj09ksBY-13" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="General tasks" vertex="1">
+          <mxGeometry height="80" width="240" x="302" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="iP6uekgT9tcNDj09ksBY-14" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="timed task" vertex="1">
+          <mxGeometry height="80" width="240" x="302" y="460" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="0SdqgoPvQ4OrD3Eh-3ij" name="Recurring tasks - overview">
+    <mxGraphModel dx="1414" dy="875" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="TY5bPjy68RfbJV8vwn8M-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="600" width="360" x="240" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="TY5bPjy68RfbJV8vwn8M-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="navigation bar" vertex="1">
+          <mxGeometry height="50" width="340" x="250" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="TY5bPjy68RfbJV8vwn8M-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Reccuring tasks - over view" vertex="1">
+          <mxGeometry height="30" width="150" x="345" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="TY5bPjy68RfbJV8vwn8M-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=default;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="410" width="280" x="280" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="TY5bPjy68RfbJV8vwn8M-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="recurring task" vertex="1">
+          <mxGeometry height="60" width="240" x="300" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="TY5bPjy68RfbJV8vwn8M-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="List of reccuring tasks" vertex="1">
+          <mxGeometry height="30" width="124" x="358" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="TY5bPjy68RfbJV8vwn8M-7" parent="1" style="shape=cross;whiteSpace=wrap;html=1;rotation=45;fillColor=light-dark(#A20025,#FF9999);fontColor=#ffffff;strokeColor=#6F0000;" value="" vertex="1">
+          <mxGeometry height="25" width="20" x="510" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="TY5bPjy68RfbJV8vwn8M-9" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.writing_pencil;" value="" vertex="1">
+          <mxGeometry height="25" width="20" x="510" y="455" as="geometry" />
+        </mxCell>
+        <mxCell id="TY5bPjy68RfbJV8vwn8M-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Create reccuring task" vertex="1">
+          <mxGeometry height="60" width="260" x="290" y="830" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="tLWioJNx_ExH3cr7NMYN" name="recuring task - create/edit">
+    <mxGraphModel dx="1414" dy="875" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tovT1qwVyIHy0fcGc7pO-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="600" width="360" x="240" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="Ly-H9nj4T_4TTUCjc9vb-1" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="recuring task - create/edit" vertex="1">
+          <mxGeometry height="30" width="186" x="327" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="Ly-H9nj4T_4TTUCjc9vb-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Task descrebtion" vertex="1">
+          <mxGeometry height="60" width="280" x="280" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="Ly-H9nj4T_4TTUCjc9vb-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="daily / weekly / monthly" vertex="1">
+          <mxGeometry height="60" width="226" x="307" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="Ly-H9nj4T_4TTUCjc9vb-4" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="reccuring" vertex="1">
+          <mxGeometry height="30" width="60" x="384" y="600" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="cvn-pk9nVhOKBZdGTXkS" name="General lists - overview">
+    <mxGraphModel dx="1414" dy="875" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cSrJKcmDz2JxVZBsUbgD-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="600" width="360" x="200" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="cSrJKcmDz2JxVZBsUbgD-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;" value="navigation bar" vertex="1">
+          <mxGeometry height="50" width="340" x="210" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="cSrJKcmDz2JxVZBsUbgD-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="General list overview" vertex="1">
+          <mxGeometry height="30" width="164" x="298" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="cSrJKcmDz2JxVZBsUbgD-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="create list" vertex="1">
+          <mxGeometry height="30" width="120" x="230" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="cSrJKcmDz2JxVZBsUbgD-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="create task" vertex="1">
+          <mxGeometry height="30" width="120" x="390" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="cSrJKcmDz2JxVZBsUbgD-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="General list" vertex="1">
+          <mxGeometry height="150" width="240" x="260" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="cSrJKcmDz2JxVZBsUbgD-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="List 1" vertex="1">
+          <mxGeometry height="150" width="240" x="260" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="cSrJKcmDz2JxVZBsUbgD-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="List 2" vertex="1">
+          <mxGeometry height="90" width="240" x="260" y="780" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="9Vgo2U7SCZ7rRoKZmNUG" name="Genera list - create">
+    <mxGraphModel dx="1414" dy="875" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bhPmr7XsmtGg7rGJLGMc-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=none;" value="" vertex="1">
+          <mxGeometry height="600" width="360" x="240" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="L09z3YQ4GlbNg6rurD1V-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Task descrebtion" vertex="1">
+          <mxGeometry height="60" width="280" x="280" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="L09z3YQ4GlbNg6rurD1V-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Select list / select day" vertex="1">
+          <mxGeometry height="60" width="280" x="280" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="N4Dl-sqcFIHPFZN0XZH5-1" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="General list create" vertex="1">
+          <mxGeometry height="30" width="164" x="350" y="280" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
