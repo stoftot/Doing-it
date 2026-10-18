@@ -126,6 +126,14 @@ public sealed class MainPage : ContentPage
             enabled.Toggled += async (_, args) => await Change(() => _store.SetRecurringEnabledAsync(task.Id, args.Value));
             var details = Ui.Stack(Ui.Text(task.Title, 17, bold: true), Ui.Text(PlannerQueries.ScheduleLabel(task), 12, Ui.Muted));
             details.Spacing = 5;
+            if (task.IsChecklist)
+            {
+                var occurrence = PlannerQueries.ForDate(_store.Data, _today).FirstOrDefault(item => item.IsRecurring && item.Id == task.Id);
+                details.Add(Ui.Text(occurrence is null ? $"To-do list · {task.Subtasks.Length} subtasks" : occurrence.ProgressLabel + " today", 12, Ui.Teal));
+                var tap = new TapGestureRecognizer();
+                tap.Tapped += async (_, _) => await Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, true, occurrence is null ? null : _today));
+                details.GestureRecognizers.Add(tap);
+            }
             var card = Ui.Stack(Ui.Between(details, enabled), Ui.Rule(),
                 Ui.Between(Ui.Text(task.IsEnabled ? "●  Active" : "○  Paused", 12, task.IsEnabled ? Ui.Teal : Ui.Muted),
                     Ui.Quiet("Edit routine", () => OpenRecurring(task), "EditRecurring" + task.Id)));
@@ -149,7 +157,7 @@ public sealed class MainPage : ContentPage
     private View ListCard(TaskList list, bool manage)
     {
         IReadOnlyList<DueTask> Items() => _store.Data.Tasks.Where(t => t.ListId == list.Id)
-            .Select(t => new DueTask(t.Id, t.Title, false, t.IsCompleted)).ToArray();
+            .Select(PlannerQueries.FromTask).ToArray();
         var items = Items();
         var header = SectionHeader(list.Name, Items);
         var stack = Ui.Stack(header);
@@ -177,6 +185,7 @@ public sealed class MainPage : ContentPage
 
     private View TaskRow(DueTask task, DateOnly? date = null)
     {
+        if (task.IsChecklist) return ChecklistRow(task, () => OpenChecklist(task, date));
         var check = new CheckBox { Color = Ui.Teal, IsChecked = false, WidthRequest = 44, HeightRequest = 48 };
         SemanticProperties.SetDescription(check, $"Complete {task.Title}");
         check.CheckedChanged += async (_, args) =>
@@ -192,6 +201,26 @@ public sealed class MainPage : ContentPage
         grid.Add(text, 1);
         grid.Add(Ui.Icon("edit", "Edit " + task.Title, () => Edit(task)), 2);
         return grid;
+    }
+
+    internal static View ChecklistRow(DueTask task, Func<Task> open)
+    {
+        var text = Ui.Stack(Ui.Text(task.Title, 15), Ui.Text(task.ProgressLabel, 12, Ui.Teal, true));
+        text.Spacing = 3;
+        if (task.IsRecurring) text.Add(Ui.Text("Recurring", 10, Ui.Muted));
+        var row = new Grid { ColumnDefinitions = [new(GridLength.Auto), new(GridLength.Star)], ColumnSpacing = 8, Padding = new Thickness(0, 8) };
+        row.Add(Ui.Icon("list", "Open " + task.Title, open));
+        row.Add(text, 1);
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += async (_, _) => await open();
+        text.GestureRecognizers.Add(tap);
+        return row;
+    }
+
+    private Task OpenChecklist(DueTask task, DateOnly? date)
+    {
+        ClosePopup();
+        return Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, task.IsRecurring, task.IsRecurring ? date ?? _today : null));
     }
 
     private Task Complete(DueTask task, DateOnly? date, bool value) => task.IsRecurring
@@ -220,7 +249,7 @@ public sealed class MainPage : ContentPage
         var rows = Ui.Stack();
         var completed = items().Where(t => t.IsCompleted).ToArray();
         foreach (var task in completed)
-            rows.Add(Ui.Between(Ui.Text(task.Title, 14, Ui.Muted), Ui.Quiet("Undo", async () =>
+            rows.Add(task.IsChecklist ? ChecklistRow(task, () => OpenChecklist(task, date)) : Ui.Between(Ui.Text(task.Title, 14, Ui.Muted), Ui.Quiet("Undo", async () =>
             {
                 await Change(() => Complete(task, date, false));
                 ShowCompleted(name, items, date);

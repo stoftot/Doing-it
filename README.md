@@ -6,10 +6,13 @@ A native .NET MAUI Android to-do app. Teal (`#1D4C5E`) and blush (`#D5BBB1`), a 
 - **Recurring:** create, edit, pause, and resume daily, weekly, and monthly routines. Weekly schedules select weekdays; monthly schedules select days and months. Nonexistent dates are skipped.
 - **Lists:** create tasks and named lists. General is permanent. Removing a custom list moves its tasks into General.
 - **Calendar:** shared month/week view from Home and Lists, with task creation, editing, completion, and undo for the selected date.
+- **To-do list tasks:** choose **To-do list** in a new task or routine form, enter a title and subtasks, then save. Tap the task to open its checklist popup. Each check saves immediately; the row shows how many items are done and completes automatically when all are checked. Open a completed checklist and uncheck an item to reopen it. **Edit to-do list** changes its title and items; close the editor to cancel unsaved edits.
 
 A task belongs to either a list or one calendar date. List tasks stay in that list; dated tasks appear only on their date. Each recurring occurrence has its own completion state. Routines start on their creation date. Editing a routine changes its schedule from that start date; completion records are retained for matching dates.
 
 Everything is stored locally in the app's private data directory as `planner.json`, with an atomic replacement and previous-save `.bak`. No account or server is needed. There are no notifications, cloud sync, or web UI. Uninstalling the app can remove local data.
+
+Recurring checklists have separate progress for each date. Renaming a subtask preserves its checkmarks; adding an item reopens completed occurrences until that item is checked. Removing an item removes its progress from the routine's history. The task type is chosen at creation. Existing version 1 planner files load without losing ordinary tasks or completions; the next save uses schema version 2.
 
 ## Build and run
 

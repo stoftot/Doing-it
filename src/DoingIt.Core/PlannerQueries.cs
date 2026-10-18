@@ -11,18 +11,24 @@ public static class PlannerQueries
         var due = new List<DueTask>();
         foreach (var task in data.Tasks)
             if (task.ScheduledDate == date)
-                due.Add(new DueTask(task.Id, task.Title, false, task.IsCompleted));
+                due.Add(FromTask(task));
 
         foreach (var task in data.RecurringTasks)
         {
             if (!task.IsEnabled || date < task.StartDate || !OccursOn(task, date))
                 continue;
 
+            var completion = data.Completions.FirstOrDefault(item => item.RecurringTaskId == task.Id && item.Date == date);
+            var done = task.Subtasks.Count(subtask => completion?.CompletedSubtaskIds.Contains(subtask.Id) == true);
             due.Add(new DueTask(task.Id, task.Title, true,
-                data.Completions.Any(completion => completion.RecurringTaskId == task.Id && completion.Date == date)));
+                task.IsChecklist ? task.Subtasks.Length > 0 && done == task.Subtasks.Length : completion is not null,
+                task.IsChecklist, done, task.Subtasks.Length));
         }
         return due;
     }
+
+    public static DueTask FromTask(TaskItem task) => new(task.Id, task.Title, false, task.IsCompleted,
+        task.IsChecklist, task.Subtasks.Count(subtask => subtask.IsCompleted), task.Subtasks.Length);
 
     public static string ScheduleLabel(RecurringTask task)
     {

@@ -6,7 +6,7 @@
 | TFM | `net10.0-android` |
 | Target/minimum API | 36 / 23 (Android 6.0+) |
 | Package ID | `com.doingit.app` |
-| Display name/version | Doing it / 0.1.0, version code 1 |
+| Display name/version | Doing it / 0.1.0, version code 2 |
 | Entry | `Platforms/Android/MainActivity.cs` -> MainApplication -> MauiProgram -> App |
 | Native UI | C# MAUI controls, modal editors and shared calendar; no WebView/Blazor |
 | SDK | `global.json`: .NET 10.0.402, latestPatch roll forward |
@@ -35,6 +35,6 @@ No backend, forwarding or account is required. A physical device remains an alte
 
 Core tests run independently of a device. [Manual planner cases](../../../tests/manual/planner.md) cover actual native interactions, date/list separation, recurrence, persistence, accessibility and keyboard behavior. adb UI hierarchy, input and screenshots can supply device evidence; build/test success alone does not.
 
-Source hooks include `TabHome`, `TabRecurring`, `TabLists`, `TaskDescription`, `TaskListPicker`, `TaskDatePicker`, `MonthView` and `WeekView`, plus task completion semantic descriptions. Actual Appium locator exposure is unverified. Core tests target `net10.0` and do not create an AndroidDriver or consume runner context.
+Source hooks include `TabHome`, `TabRecurring`, `TabLists`, `TaskDescription`, `TaskListPicker`, `TaskDatePicker`, `MonthView` and `WeekView`, plus task completion semantic descriptions. Checklist controls include `ChecklistTaskType`, `AddSubtask`, `ChecklistProgress`, `EditChecklist` and `CloseChecklist`; subtask input/check IDs have stable subtask-ID suffixes. Actual Appium locator exposure is unverified. Core tests target `net10.0` and do not create an AndroidDriver or consume runner context.
 
 DevFlow and Android C# debugger instrumentation are not enabled. The shared API 36 Google APIs emulator approximates a Nothing Phone (3a) display; it does not provide Nothing OS, measured physical-phone logical DPI, minimum API 23 coverage or OEM/hardware validation. Physical phone availability and live shared reservations must be discovered during actual device work. See [verification](../../verification.md#android-project-verification) for the remaining harness and runtime checks.

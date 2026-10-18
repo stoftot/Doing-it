@@ -90,6 +90,11 @@ public sealed class CalendarPage : ContentPage
             tasks.Add(Ui.Empty(_showCompleted ? "Nothing completed yet" : "A little breathing room", _showCompleted ? "Check off a task to see it here." : "No tasks planned for this day."));
         foreach (var task in displayed)
         {
+            if (task.IsChecklist)
+            {
+                tasks.Add(MainPage.ChecklistRow(task, () => Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, task.IsRecurring, _selected))));
+                continue;
+            }
             var check = new CheckBox { Color = Ui.Teal, IsChecked = task.IsCompleted, WidthRequest = 44, HeightRequest = 48 };
             SemanticProperties.SetDescription(check, (task.IsCompleted ? "Undo " : "Complete ") + task.Title);
             check.CheckedChanged += async (_, args) => await Toggle(task, args.Value);

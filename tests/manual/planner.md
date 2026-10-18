@@ -228,3 +228,30 @@ Check device interaction and layout with constrained space and larger system tex
 
 ### Cleanup
 - Restore the original system font size and remove the test task and routine.
+
+## PLANNER-011 — Checklist editing, progress, recurrence, and restart
+
+### Purpose
+Verify checklist creation and editing in list, dated, and recurring tasks, including partial progress, reopening, future occurrences, and persistence.
+
+### Preconditions
+- Use a test installation with no `QA Checklist` items and a correct device local date. Preserve unrelated existing data; use the unique `QA` names below.
+
+### Steps
+1. In Lists, create a list named `QA Checklist`; add a checklist task named `QA Trip` with subtasks `Book ticket` and `Pack bag`. Open its checklist and complete only `Book ticket`.
+2. Confirm the partly complete task remains active and shows `1 of 2 done`. From its checklist, tap Edit to-do list, rename the task and first subtask, add `Check weather`, and remove `Pack bag`; close the editor without saving. Reopen the checklist and confirm the saved title, subtasks, and checked state are unchanged.
+3. Edit the to-do list again, save the title `QA Trip ready`, rename `Book ticket` to `Reserve ticket`, add `Check weather`, and remove `Pack bag`. Complete all remaining subtasks. Open the list's completed popup, open the checklist, and uncheck one subtask.
+4. Create a dated checklist `QA Appointment` for tomorrow with subtasks `Bring form` and `Bring ID`. Complete one subtask and inspect the calendar for today and tomorrow.
+5. Create a daily recurring checklist `QA Daily prep` starting today with subtasks `Review plan` and `Prepare bag`. Complete both subtasks for today. In the calendar, inspect tomorrow and complete only `Review plan` there.
+6. Open today's `QA Daily prep` checklist and tap Edit routine. Rename `Review plan`, add `Check weather`, remove `Prepare bag`, and save. Inspect today's occurrence and tomorrow's occurrence. Complete `Check weather` for today, then fully stop and relaunch the app without clearing its data.
+7. Reopen the calendar and inspect today's, tomorrow's, and the day-after-tomorrow's occurrences. Open a completed checklist from the completed popup and uncheck one subtask.
+
+### Expected result
+- The checklist view shows each subtask's checked state and an accurate completed/total counter. The Edit to-do list and Edit routine forms change titles and membership; closing without saving leaves those edits unapplied, and saving preserves progress for matching subtasks.
+- A partially checked checklist remains active and shows an accurate completed/total counter. Completing every current subtask marks the parent complete; clearing a checked subtask reopens it in the active list while retaining the other subtask's progress.
+- The dated checklist appears only tomorrow. Its partial progress does not affect any other date or checklist.
+- Each recurring date has independent progress. A future occurrence starts unchecked. After editing the routine, completion remains attached to matching subtask IDs, a renamed subtask keeps its progress, and a newly added subtask reopens a previously complete occurrence until it is checked.
+- After restart, task, subtask, and per-date completion state remain saved. Today's recurring checklist stays complete; tomorrow retains its own partial progress, and the day after tomorrow's occurrence remains fresh and incomplete.
+
+### Cleanup
+- Delete `QA Trip ready`, `QA Appointment`, and `QA Daily prep` through their edit screens, then delete `QA Checklist`.

@@ -10,6 +10,7 @@
 | `src/DoingIt/Pages/RecurringEditorPage.cs` | Daily, weekly and monthly schedule form |
 | `src/DoingIt/Pages/CalendarPage.cs` | Shared month/week calendar and dated task actions |
 | `src/DoingIt/Pages/EditorPage.cs` | Shared save/error/modal form handling |
+| `src/DoingIt/Pages/ChecklistPage.cs`, `SubtaskEditor.cs` | Checklist popup, per-date checking and draft subtask forms |
 | `src/DoingIt/Ui.cs`, `Resources/` | Palette, native UI building blocks, fonts and vector icons |
 | `src/DoingIt/Platforms/Android/` | Android activity, manifest and theme |
 | `src/DoingIt.Core/` | Domain records, date queries, validation and atomic JSON storage |

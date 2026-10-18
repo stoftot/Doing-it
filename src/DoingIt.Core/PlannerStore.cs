@@ -35,6 +35,18 @@ public sealed class PlannerStore(string filePath)
                 stream.Position = 0;
                 loaded = await JsonSerializer.DeserializeAsync(stream, PlannerJsonContext.Default.PlannerData)
                     ?? throw new InvalidDataException("Planner data is empty.");
+                if (loaded.SchemaVersion == 1)
+                {
+                    // Version 1 has no checklist fields. Initialize them explicitly for
+                    // source-generated deserialization of the older record shape.
+                    loaded = loaded with
+                    {
+                        SchemaVersion = 2,
+                        Tasks = loaded.Tasks?.Select(task => task is null ? task! : task with { IsChecklist = false, Subtasks = [] }).ToArray()!,
+                        RecurringTasks = loaded.RecurringTasks?.Select(task => task is null ? task! : task with { IsChecklist = false, Subtasks = [] }).ToArray()!,
+                        Completions = loaded.Completions?.Select(completion => completion is null ? completion! : completion with { CompletedSubtaskIds = [] }).ToArray()!
+                    };
+                }
                 ValidateData(loaded);
             }
             catch (Exception exception) when (exception is JsonException or InvalidDataException or ArgumentException or InvalidOperationException)
@@ -93,10 +105,13 @@ public sealed class PlannerStore(string filePath)
             var cleaned = task with
             {
                 Title = CleanText(task.Title, 250, "Task title"),
-                ListId = task.ListId?.Trim()
+                ListId = task.ListId?.Trim(),
+                Subtasks = CleanSubtasks(task.Subtasks)
             };
             ValidateTask(cleaned, data.Lists);
             var index = Array.FindIndex(data.Tasks, existing => existing.Id == cleaned.Id);
+            if (index >= 0 && data.Tasks[index].IsChecklist != cleaned.IsChecklist)
+                throw new InvalidOperationException("The task type cannot be changed after creation.");
             var tasks = index < 0 ? [.. data.Tasks, cleaned] : (TaskItem[])data.Tasks.Clone();
             if (index >= 0) tasks[index] = cleaned;
             return data with { Tasks = tasks };
@@ -112,8 +127,22 @@ public sealed class PlannerStore(string filePath)
     public Task SetTaskCompletedAsync(string id, bool completed) => ChangeAsync(data =>
     {
         var index = FindIndex(data.Tasks, id, task => task.Id, "Task");
+        if (data.Tasks[index].IsChecklist) throw new InvalidOperationException("Complete the subtasks in this to-do list.");
         var tasks = (TaskItem[])data.Tasks.Clone();
         tasks[index] = tasks[index] with { IsCompleted = completed };
+        return data with { Tasks = tasks };
+    });
+
+    public Task SetSubtaskCompletedAsync(string id, string subtaskId, bool completed) => ChangeAsync(data =>
+    {
+        var index = FindIndex(data.Tasks, id, task => task.Id, "Task");
+        var task = data.Tasks[index];
+        if (!task.IsChecklist) throw new InvalidOperationException("This task is not a to-do list.");
+        var subtaskIndex = FindIndex(task.Subtasks, subtaskId, subtask => subtask.Id, "Subtask");
+        var subtasks = (Subtask[])task.Subtasks.Clone();
+        subtasks[subtaskIndex] = subtasks[subtaskIndex] with { IsCompleted = completed };
+        var tasks = (TaskItem[])data.Tasks.Clone();
+        tasks[index] = task with { Subtasks = subtasks };
         return data with { Tasks = tasks };
     });
 
@@ -122,12 +151,20 @@ public sealed class PlannerStore(string filePath)
         ArgumentNullException.ThrowIfNull(task);
         return ChangeAsync(data =>
         {
-            var cleaned = task with { Title = CleanText(task.Title, 250, "Recurring task title") };
+            var cleaned = task with { Title = CleanText(task.Title, 250, "Recurring task title"), Subtasks = CleanSubtasks(task.Subtasks) };
             ValidateRecurring(cleaned);
             var index = Array.FindIndex(data.RecurringTasks, existing => existing.Id == cleaned.Id);
+            if (index >= 0 && data.RecurringTasks[index].IsChecklist != cleaned.IsChecklist)
+                throw new InvalidOperationException("The task type cannot be changed after creation.");
             var tasks = index < 0 ? [.. data.RecurringTasks, cleaned] : (RecurringTask[])data.RecurringTasks.Clone();
             if (index >= 0) tasks[index] = cleaned;
-            return data with { RecurringTasks = tasks };
+            return data with
+            {
+                RecurringTasks = tasks,
+                Completions = data.Completions.Select(completion => completion.RecurringTaskId == task.Id && task.IsChecklist
+                    ? completion with { CompletedSubtaskIds = completion.CompletedSubtaskIds.Where(id => cleaned.Subtasks.Any(subtask => subtask.Id == id)).ToArray() }
+                    : completion).ToArray()
+            };
         });
     }
 
@@ -153,6 +190,7 @@ public sealed class PlannerStore(string filePath)
     {
         var index = FindIndex(data.RecurringTasks, id, task => task.Id, "Recurring task");
         var recurring = data.RecurringTasks[index];
+        if (recurring.IsChecklist) throw new InvalidOperationException("Complete the subtasks in this to-do list.");
         if (!recurring.IsEnabled || date < recurring.StartDate || !PlannerQueries.ForDate(data, date).Any(task => task.IsRecurring && task.Id == id))
             throw new InvalidOperationException("This recurring task does not occur on the selected date.");
         var exists = data.Completions.Any(item => item.RecurringTaskId == id && item.Date == date);
@@ -162,6 +200,24 @@ public sealed class PlannerStore(string filePath)
             Completions = completed
                 ? [.. data.Completions, new OccurrenceCompletion { RecurringTaskId = id, Date = date }]
                 : data.Completions.Where(item => item.RecurringTaskId != id || item.Date != date).ToArray()
+        };
+    });
+
+    public Task SetOccurrenceSubtaskCompletedAsync(string id, DateOnly date, string subtaskId, bool completed) => ChangeAsync(data =>
+    {
+        var recurring = data.RecurringTasks[FindIndex(data.RecurringTasks, id, task => task.Id, "Recurring task")];
+        if (!recurring.IsChecklist) throw new InvalidOperationException("This task is not a to-do list.");
+        if (!PlannerQueries.ForDate(data, date).Any(task => task.IsRecurring && task.Id == id))
+            throw new InvalidOperationException("This recurring task does not occur on the selected date.");
+        FindIndex(recurring.Subtasks, subtaskId, subtask => subtask.Id, "Subtask");
+        var previous = data.Completions.FirstOrDefault(item => item.RecurringTaskId == id && item.Date == date);
+        var ids = previous?.CompletedSubtaskIds ?? [];
+        var nextIds = completed ? ids.Append(subtaskId).Distinct().ToArray() : ids.Where(value => value != subtaskId).ToArray();
+        var others = data.Completions.Where(item => item.RecurringTaskId != id || item.Date != date).ToArray();
+        return data with
+        {
+            Completions = nextIds.Length == 0 ? others :
+                [.. others, new OccurrenceCompletion { RecurringTaskId = id, Date = date, CompletedSubtaskIds = nextIds }]
         };
     });
 
@@ -208,6 +264,7 @@ public sealed class PlannerStore(string filePath)
     {
         RequireId(task.Id, "Task");
         CleanText(task.Title, 250, "Task title");
+        ValidateSubtasks(task.IsChecklist, task.Subtasks);
         if ((task.ListId is not null) == task.ScheduledDate.HasValue)
             throw new ArgumentException("A task must belong to either a list or a scheduled date.");
         if (task.ListId is not null && !lists.Any(list => list.Id == task.ListId))
@@ -218,6 +275,9 @@ public sealed class PlannerStore(string filePath)
     {
         RequireId(task.Id, "Recurring task");
         CleanText(task.Title, 250, "Recurring task title");
+        ValidateSubtasks(task.IsChecklist, task.Subtasks);
+        if (task.Subtasks.Any(subtask => subtask.IsCompleted))
+            throw new ArgumentException("Recurring subtask completion belongs to a date, not the routine.");
         if (task.StartDate == default) throw new ArgumentException("A recurring task needs a start date.");
         if (task.WeekDays is null || task.MonthDays is null || task.Months is null)
             throw new ArgumentException("Recurring schedule selections are missing.");
@@ -237,9 +297,31 @@ public sealed class PlannerStore(string filePath)
         if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException($"{label} ID is required.");
     }
 
+    private static Subtask[] CleanSubtasks(Subtask[] subtasks)
+    {
+        if (subtasks is null || subtasks.Any(subtask => subtask is null))
+            throw new ArgumentException("Subtasks are missing.");
+        return subtasks.Select(subtask => subtask with { Title = CleanText(subtask.Title, 250, "Subtask title") }).ToArray();
+    }
+
+    private static void ValidateSubtasks(bool isChecklist, Subtask[] subtasks)
+    {
+        if (subtasks is null || subtasks.Any(subtask => subtask is null)) throw new ArgumentException("Subtasks are missing.");
+        if (isChecklist && subtasks.Length == 0) throw new ArgumentException("Add at least one subtask to the to-do list.");
+        if (!isChecklist && subtasks.Length > 0) throw new ArgumentException("Only to-do lists can contain subtasks.");
+        foreach (var subtask in subtasks)
+        {
+            RequireId(subtask.Id, "Subtask");
+            if (CleanText(subtask.Title, 250, "Subtask title") != subtask.Title)
+                throw new ArgumentException("A subtask title has extra whitespace.");
+        }
+        if (subtasks.Select(subtask => subtask.Id).Distinct(StringComparer.Ordinal).Count() != subtasks.Length)
+            throw new ArgumentException("Subtasks have duplicate IDs.");
+    }
+
     private static void ValidateData(PlannerData data)
     {
-        if (data.SchemaVersion != 1) throw new InvalidDataException($"Unsupported planner data version {data.SchemaVersion}.");
+        if (data.SchemaVersion != 2) throw new InvalidDataException($"Unsupported planner data version {data.SchemaVersion}.");
         if (data.Lists is null || data.Tasks is null || data.RecurringTasks is null || data.Completions is null)
             throw new InvalidDataException("Planner data has missing collections.");
         if (data.Lists.Any(list => list is null) || data.Tasks.Any(task => task is null) ||
@@ -271,8 +353,13 @@ public sealed class PlannerStore(string filePath)
         foreach (var completion in data.Completions)
         {
             if (completion.Date == default) throw new InvalidDataException("A completion has no date.");
-            if (!data.RecurringTasks.Any(task => task.Id == completion.RecurringTaskId))
+            var recurring = data.RecurringTasks.FirstOrDefault(task => task.Id == completion.RecurringTaskId);
+            if (recurring is null)
                 throw new InvalidDataException("A completion refers to a missing recurring task.");
+            if (completion.CompletedSubtaskIds is null ||
+                completion.CompletedSubtaskIds.Distinct(StringComparer.Ordinal).Count() != completion.CompletedSubtaskIds.Length ||
+                completion.CompletedSubtaskIds.Any(id => !recurring.Subtasks.Any(subtask => subtask.Id == id)))
+                throw new InvalidDataException("A completion has invalid subtasks.");
         }
         if (data.Completions.Select(completion => (completion.RecurringTaskId, completion.Date)).Distinct().Count() != data.Completions.Length)
             throw new InvalidDataException("A recurring occurrence has duplicate completions.");

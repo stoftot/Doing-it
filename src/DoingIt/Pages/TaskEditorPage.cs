@@ -7,6 +7,7 @@ public sealed class TaskEditorPage : EditorPage
     private readonly PlannerStore _store;
     private readonly TaskItem? _existing;
     private readonly Editor _description;
+    private readonly SubtaskEditor _subtasks;
     private readonly Picker _lists;
     private readonly DatePicker _date;
     private readonly View _listDestination;
@@ -46,6 +47,8 @@ public sealed class TaskEditorPage : EditorPage
         };
         Body.Add(Ui.Text("One small thing, written down.", 14, Ui.Muted));
         Body.Add(Ui.Field("TASK DESCRIPTION", Ui.Card(_description)));
+        _subtasks = new SubtaskEditor(existing?.IsChecklist ?? false, existing?.Subtasks ?? [], existing is not null);
+        Body.Add(_subtasks);
         _listMode = Ui.Button("In a list", () => SetMode(false), false, "ChooseListMode");
         _dateMode = Ui.Button("On a date", () => SetMode(true), false, "ChooseDateMode");
         var modes = new Grid { ColumnDefinitions = [new(GridLength.Star), new(GridLength.Star)], ColumnSpacing = 8 };
@@ -86,6 +89,8 @@ public sealed class TaskEditorPage : EditorPage
     {
         Id = _existing?.Id ?? Guid.NewGuid().ToString("N"),
         Title = _description.Text ?? "",
+        IsChecklist = _subtasks.IsChecklist,
+        Subtasks = _subtasks.Subtasks,
         ListId = _scheduled ? null : (_lists.SelectedItem as TaskList)?.Id,
         ScheduledDate = _scheduled ? DateOnly.FromDateTime(_date.Date ?? DateTime.Today) : null,
         IsCompleted = _existing?.IsCompleted ?? false

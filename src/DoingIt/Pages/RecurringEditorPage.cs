@@ -8,6 +8,7 @@ public sealed class RecurringEditorPage : EditorPage
     private readonly PlannerStore _store;
     private readonly RecurringTask? _existing;
     private readonly Editor _description;
+    private readonly SubtaskEditor _subtasks;
     private readonly ContentView _options = new();
     private readonly Dictionary<RecurrenceKind, Button> _modes = [];
     private readonly HashSet<DayOfWeek> _weekDays;
@@ -27,6 +28,8 @@ public sealed class RecurringEditorPage : EditorPage
         _description = Ui.Description(existing?.Title ?? "");
         Body.Add(Ui.Text("Give the good habits a place to grow.", 14, Ui.Muted));
         Body.Add(Ui.Field("TASK DESCRIPTION", Ui.Card(_description)));
+        _subtasks = new SubtaskEditor(existing?.IsChecklist ?? false, existing?.Subtasks ?? [], existing is not null);
+        Body.Add(_subtasks);
         var modes = new Grid { ColumnDefinitions = [new(GridLength.Star), new(GridLength.Star), new(GridLength.Star)], ColumnSpacing = 7 };
         var kinds = new[] { RecurrenceKind.Daily, RecurrenceKind.Weekly, RecurrenceKind.Monthly };
         for (var i = 0; i < kinds.Length; i++)
@@ -109,6 +112,8 @@ public sealed class RecurringEditorPage : EditorPage
     {
         Id = _existing?.Id ?? Guid.NewGuid().ToString("N"),
         Title = _description.Text ?? "",
+        IsChecklist = _subtasks.IsChecklist,
+        Subtasks = _subtasks.Subtasks,
         Kind = _kind,
         WeekDays = [.. _weekDays.OrderBy(d => ((int)d + 6) % 7)],
         MonthDays = [.. _monthDays.Order()],
