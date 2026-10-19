@@ -200,5 +200,6 @@ a physical Phone (3a); no community image/port is provisioned or validated here.
 API 36 emulator results cannot prove API 23 minimum support, other OEMs, physical
 keyboard/back/insets/accessibility behavior or all screen sizes. Case 010 needs
 real layout/interaction assessment and restoration of any deliberately changed
-device settings. The app has no notification/background/OEM hardware features;
-do not invent such coverage. Report every unexecuted platform/case explicitly.
+device settings. Launcher widgets need separate background date/boot/idle checks
+and OEM launcher coverage; see PLANNER-012 through PLANNER-015. The app has no
+notifications or OEM hardware features. Report every unexecuted platform/case explicitly.

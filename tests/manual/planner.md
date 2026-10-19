@@ -255,3 +255,106 @@ Verify checklist creation and editing in list, dated, and recurring tasks, inclu
 
 ### Cleanup
 - Delete `QA Trip ready`, `QA Appointment`, and `QA Daily prep` through their edit screens, then delete `QA Checklist`.
+
+## PLANNER-012 — Today progress widgets show dated task counts
+
+### Purpose
+Confirm both widget sizes report the same completion counts as Home's dated tasks for the device's local day.
+
+### Preconditions
+- Install a build containing the `Tasks left today`, `Today’s progress`, and Create task widgets on a launcher that supports app widgets.
+- Use a test installation with no `QA Widget` items and the correct device local date.
+- Start with no tasks due today so the initial widget state can be confirmed without clearing or resetting planner data.
+- Place one 1x1 `Tasks left today` widget and one 2x1 `Today’s progress` widget where both are visible.
+
+### Steps
+1. Confirm the empty-day widget state. Create ten tasks dated today, each prefixed with the run's unique `QA Widget` marker. Also create one `QA Widget` task in General, one dated yesterday, and one dated tomorrow.
+2. Complete six of today's ten dated tasks. Leave the other four incomplete, then inspect both widgets and Home's Today's tasks section.
+3. Complete the remaining four dated tasks and inspect all three places again.
+4. Create one active daily `QA Widget` routine starting today. Inspect the widgets, complete today's routine occurrence, and inspect again. Then undo one dated task and inspect once more.
+5. Remove only this run's dated, list, and recurring items. Confirm the empty-day state after cleanup.
+
+### Expected result
+- Before creating any due items, both widgets show `No tasks today` rather than the all-done presentation.
+- With six of ten dated tasks complete and no routine yet, the 1x1 `Tasks left today` widget shows `4` and `left today`; the 2x1 `Today’s progress` widget shows `6/10`.
+- Both counts include each checklist parent as one task, counting it complete only when every subtask is checked. They exclude General/list tasks and tasks dated on other days.
+- An active routine due today contributes one task. Paused routines, routines before their start date, and weekly routines on a nonselected weekday do not contribute.
+- Completing all ten dated tasks changes both widgets to the all-done presentation (checkmark and `All done`). Adding the active routine changes the count to 10/11 complete, with `1` left today; completing its occurrence returns both widgets to all-done. Undoing one dated task returns them to 10/11 complete, with `1` left today.
+- After cleanup, a date with no due tasks shows `No tasks today`, not the all-done presentation. Home's dated section and widget totals agree after each change.
+
+### Cleanup
+- Delete only the run's `QA Widget` tasks and routine, then remove the temporary launcher widgets if desired.
+
+## PLANNER-013 — Today widgets refresh after planner changes and date transitions
+
+### Purpose
+Verify every instance of the widgets refreshes after task changes and eventually follows the device's local date across lifecycle events.
+
+### Preconditions
+- Install the widget-enabled app and place at least two instances of each available size on the launcher.
+- Use a test installation with no `QA Widget refresh` items; note the device's original date, time zone, and font size.
+
+### Steps
+1. Create a dated `QA Widget refresh` task for today, then add a second one from another app tab or modal editor.
+2. Complete the first task, undo it, edit the second task, and delete it. Observe every widget instance after each change.
+3. Create a dated task for tomorrow. Advance the device date past local midnight using the approved test-device procedure, then return to the launcher and app.
+4. Restart the device, reopen the launcher, and allow normal app/widget refresh time. If the test environment supports it, repeat with a different local time zone and restore the original setting afterward.
+
+### Expected result
+- All instances of each widget size eventually show matching counts after add, edit, delete, complete, and undo actions, including actions performed from another tab or modal editor.
+- At the new local date, yesterday's tasks no longer count and the task dated for the new day counts. A routine occurrence uses that date's independent completion state.
+- Counts recover after device restart and eventually reflect the restored time zone. No task is duplicated or moved to a different date by refresh.
+- Record delayed refresh or launcher-specific failures with the widget size and launcher details; do not treat a stale frame immediately after a change as a final result.
+
+### Cleanup
+- Restore the original device date/time zone and remove only this run's `QA Widget refresh` tasks and routines.
+
+## PLANNER-014 — Create task widget opens the existing task editor
+
+### Purpose
+Confirm the 1x1 Create task widget reuses the app's dated task editor safely from cold and warm starts.
+
+### Preconditions
+- Install the widget-enabled app and place one 1x1 Create task widget on the launcher.
+- Use a test installation with no `QA Create widget` task. App data is readable and can be loaded normally.
+
+### Steps
+1. Terminate the background app process through the approved test route without using Android Settings' Force stop action, which can disable widget PendingIntents on Android 15 and later. Tap the Create task widget and inspect the opened editor and selected destination/date.
+2. Enter a unique `QA Create widget` title, save, and verify the new task appears once on Home for today and in the widget count.
+3. Return to the launcher, tap the widget again, and use Close; repeat and use Android Back. Confirm no task is added by either dismissal.
+4. Tap repeatedly while the editor is opening, enter an unsaved distinctive title, and tap the widget again. Confirm there is still one editor with the typed text intact. Save once and inspect the app for duplicate editors or duplicate tasks.
+5. With the app already open on another tab, tap the widget, save another uniquely named task, and confirm Home is shown with the saved task.
+6. On a test installation with a deliberately unreadable planner file prepared through the approved test fixture process, cold-launch through the widget and inspect the recovery flow. Do not modify or clear the unreadable data.
+
+### Expected result
+- A cold or warm widget tap opens the existing new-task editor with today's date selected and the dated-task destination active.
+- Saving creates exactly one task and returns to Home with the updated task count. Close and Back dismiss without saving.
+- Repeated taps do not stack duplicate editors or save duplicate tasks.
+- When planner loading fails, the app presents its normal recovery option and preserves the unreadable data; the widget flow does not permit an unsafe edit or silent reset.
+
+### Cleanup
+- Delete only the `QA Create widget` tasks created in this run.
+
+## PLANNER-015 — Widget placement, sizing, and readable text
+
+### Purpose
+Check Android launcher placement and accessibility readability for both fixed widget sizes.
+
+### Preconditions
+- Use an Android device or emulator with a launcher that supports the app's widgets.
+- Note the original system font size and launcher grid settings. Create a dated task count that produces a nonzero remaining count and a separate all-done state.
+
+### Steps
+1. In the launcher widget picker, find `Tasks left today` and `Today’s progress`. Add the offered 1x1 and 2x1 sizes and inspect their fixed dimensions and content; do not expect resizing.
+2. Move each widget to another launcher page. Tap the 1x1 widget from a cold app start, then tap the 2x1 widget while the app is warm on another tab. Also open a modal editor, return to the launcher, tap a count widget, and confirm navigation returns to Home.
+3. Add the 1x1 Create task widget from the picker. Tap it from a cold start and save one unique task; verify Home appears with the new count. From another tab, open a modal editor, return to the launcher, and tap Create task; save another unique task and confirm it returns to Home.
+4. Increase system font size to a large accessibility setting and inspect both count widget sizes in remaining, all-done, and empty-day states.
+5. Restore the original font size and launcher placement after recording results.
+
+### Expected result
+- The picker offers the documented 1x1 and 2x1 fixed sizes. Widgets remain legible at large system font settings and do not clip the count or status text.
+- Moving a widget does not change planner data or its counts. A count widget tap opens Home with today's tasks selected, including from another tab or after a modal editor; a Create task tap opens the existing dated editor and returns Home after save.
+- Empty-day text and the all-done presentation remain distinguishable from an incomplete count.
+
+### Cleanup
+- Restore the original font size and remove the temporary launcher widgets and test tasks.

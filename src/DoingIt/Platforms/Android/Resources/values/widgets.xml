@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_remaining_name">Tasks left today</string>
+    <string name="widget_progress_name">Today’s progress</string>
+    <string name="widget_create_name">Create task</string>
+    <string name="widget_remaining_description">See how many tasks are left today. Tap to open today’s tasks.</string>
+    <string name="widget_progress_description">See completed tasks out of today’s total. Tap to open today’s tasks.</string>
+    <string name="widget_create_description">Write a new task with one tap.</string>
+    <string name="widget_today">Today</string>
+    <string name="widget_loading">Open app</string>
+    <color name="widget_teal">#1D4C5E</color>
+    <color name="widget_blush">#D5BBB1</color>
+</resources>

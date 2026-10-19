@@ -14,6 +14,9 @@ public sealed class MainPage : ContentPage
     private bool _loaded;
     private bool _loading;
     private bool _busy;
+    private bool? _widgetNavigation;
+    private bool _openingWidget;
+    private TaskEditorPage? _widgetEditor;
     private DateOnly _today = DateOnly.FromDateTime(DateTime.Today);
 
     public MainPage(PlannerStore store)
@@ -64,6 +67,47 @@ public sealed class MainPage : ContentPage
             _scroll.Content = content;
         }
         finally { _loading = false; }
+        await ProcessWidgetNavigation();
+    }
+
+    public void OpenFromWidget(bool createTask)
+    {
+        _widgetNavigation = createTask;
+        _ = ProcessWidgetNavigation();
+    }
+
+    private async Task ProcessWidgetNavigation()
+    {
+        // Queue through startup and failed load/retry. An unreadable planner
+        // must never open an editor against an empty snapshot.
+        if (!_loaded || _loading || _openingWidget) return;
+        _openingWidget = true;
+        try
+        {
+            while (_widgetNavigation is bool createTask)
+            {
+                _widgetNavigation = null;
+                if (createTask && _widgetEditor is not null && Navigation.ModalStack.LastOrDefault() == _widgetEditor)
+                    continue;
+                while (Navigation.ModalStack.Count > 0)
+                    await Navigation.PopModalAsync(false);
+                _tab = 0;
+                ClosePopup();
+                Render();
+                await _scroll.ScrollToAsync(0, 0, false);
+                if (createTask)
+                {
+                    _widgetEditor = new TaskEditorPage(_store, date: DateOnly.FromDateTime(DateTime.Today));
+                    await Navigation.PushModalAsync(_widgetEditor);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(ex);
+            await DisplayAlertAsync("Couldn't open the shortcut", "Please try the widget again.", "OK");
+        }
+        finally { _openingWidget = false; }
     }
 
     public void RefreshCurrentDay()

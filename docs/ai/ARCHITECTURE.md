@@ -32,4 +32,12 @@ MainPage owns three tab bodies and the completed-task overlay. Task/recurrence e
 
 ChecklistPage is a modal card for immediate subtask checking, including completed occurrences. It stays open when the final item is checked. Nested task/routine editors use the shared SubtaskEditor for draft title/item changes; closing without saving discards the draft.
 
-Native views are built in C#; compact snapshot rendering is appropriate for personal lists. There is no backend, dependency injection framework, notification scheduler, or separate view-model layer in this version.
+Native app views are built in C#; compact snapshot rendering is appropriate for personal lists. There is no backend, dependency injection framework, notification scheduler, or separate view-model layer in this version.
+
+## Android launcher widgets
+
+Three fixed-size AppWidgetProvider entries expose remaining tasks (1×1), completed/total (2×1), and create task (1×1). Android XML RemoteViews layouts use the app’s palette; widget_edit.xml mirrors edit.svg as a native vector for crisp scaling. TodayProgress counts PlannerQueries.ForDate, including checklist parents once and excluding list-only tasks.
+
+PlannerStore.Changed fires after a successful persisted mutation. App schedules an asynchronous refresh; the widget updater serializes read-only loads of planner.json and updates every placed instance. Providers can run without a MAUI window. Unreadable data displays an open-app state rather than zero/completed tasks. Periodic updates, an inexact non-waking local-midnight alarm, reboot/package updates and date/time-zone changes refresh counts; Android idle policy can delay background execution. Removing the last count widget cancels the alarm.
+
+Immutable explicit activity PendingIntents distinguish Home and Create task. MainActivity consumes the action once; MainPage queues navigation until loading succeeds, returns to Home, then optionally opens today’s TaskEditorPage. Repeated create taps reuse that shortcut’s already-open editor. Load failure keeps the request pending for retry and never opens an editor over empty fallback data.

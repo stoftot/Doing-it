@@ -7,10 +7,13 @@ A native .NET MAUI Android to-do app. Teal (`#1D4C5E`) and blush (`#D5BBB1`), a 
 - **Lists:** create tasks and named lists. General is permanent. Removing a custom list moves its tasks into General.
 - **Calendar:** shared month/week view from Home and Lists, with task creation, editing, completion, and undo for the selected date.
 - **To-do list tasks:** choose **To-do list** in a new task or routine form, enter a title and subtasks, then save. Tap the task to open its checklist popup. Each check saves immediately; the row shows how many items are done and completes automatically when all are checked. Open a completed checklist and uncheck an item to reopen it. **Edit to-do list** changes its title and items; close the editor to cancel unsaved edits.
+- **Android home-screen widgets:** long-press your launcher’s home screen, open Widgets and choose Doing it. **Tasks left today** (1×1) shows the remaining count; **Today’s progress** (2×1) shows completed/total. Both show a checkmark and **All done** when finished, or **No tasks today** on an empty day. Tap either to open Home. **Create task** (1×1) uses the app’s pencil icon and opens the task form with today selected; you can choose another date or a list.
 
 A task belongs to either a list or one calendar date. List tasks stay in that list; dated tasks appear only on their date. Each recurring occurrence has its own completion state. Routines start on their creation date. Editing a routine changes its schedule from that start date; completion records are retained for matching dates.
 
 Everything is stored locally in the app's private data directory as `planner.json`, with an atomic replacement and previous-save `.bak`. No account or server is needed. There are no notifications, cloud sync, or web UI. Uninstalling the app can remove local data.
+
+Widget totals match Home’s **Today’s tasks** section: dated tasks and active routines, with each checklist counted once. List-only tasks are excluded. All placed copies refresh after saved changes and when the app resumes. Background updates use a periodic refresh and a local-midnight alarm; Android may defer them during sleep or battery restrictions. No exact-alarm permission is required. Launcher grids determine the physical dimensions of each widget.
 
 Recurring checklists have separate progress for each date. Renaming a subtask preserves its checkmarks; adding an item reopens completed occurrences until that item is checked. Removing an item removes its progress from the routine's history. The task type is chosen at creation. Existing version 1 planner files load without losing ordinary tasks or completions; the next save uses schema version 2.
 

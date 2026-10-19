@@ -9,6 +9,7 @@
 | Display name/version | Doing it / 0.1.0, version code 2 |
 | Entry | `Platforms/Android/MainActivity.cs` -> MainApplication -> MauiProgram -> App |
 | Native UI | C# MAUI controls, modal editors and shared calendar; no WebView/Blazor |
+| Launcher widgets | Native RemoteViews: remaining 1×1, completed/total 2×1, create task 1×1; lifecycle and refresh ownership in [architecture](../ARCHITECTURE.md#android-launcher-widgets) |
 | SDK | `global.json`: .NET 10.0.402, latestPatch roll forward |
 | Shared emulator route | Explicit opt-in in root AGENTS.md; [integration guide](../../android-testing.md) |
 | Project UI harness/device config | None: no Appium test project/suite or `android-testing.json` |

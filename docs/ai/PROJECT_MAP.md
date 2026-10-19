@@ -13,6 +13,7 @@
 | `src/DoingIt/Pages/ChecklistPage.cs`, `SubtaskEditor.cs` | Checklist popup, per-date checking and draft subtask forms |
 | `src/DoingIt/Ui.cs`, `Resources/` | Palette, native UI building blocks, fonts and vector icons |
 | `src/DoingIt/Platforms/Android/` | Android activity, manifest and theme |
+| `src/DoingIt/Platforms/Android/Widgets/`, `Platforms/Android/Resources/` | Launcher widget providers, persisted counts, refresh scheduling and native layouts |
 | `src/DoingIt.Core/` | Domain records, date queries, validation and atomic JSON storage |
 | `tests/DoingIt.Core.Tests/` | xUnit domain and file-storage regression tests |
 | `tests/manual/planner.md` | Reusable Android interaction cases |
@@ -28,6 +29,7 @@ Dependency direction: `DoingIt` and `DoingIt.Core.Tests` reference `DoingIt.Core
 - Mutation: page action -> PlannerStore validation -> atomic file save -> new Data snapshot -> page refresh.
 - Scheduled view: PlannerQueries.ForDate combines exact-date tasks and active recurrence rules; completion is keyed by routine ID and date.
 - Views refresh when modal editors close and Home's local date changes/resumes.
+- Widget taps: explicit MainActivity intent -> App -> queued MainPage navigation after successful load. Widget counts read persisted data through TodayProgress/PlannerQueries.
 
 ## Generated and external areas
 

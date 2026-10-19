@@ -8,6 +8,7 @@ public sealed class PlannerStore(string filePath)
 
     private readonly SemaphoreSlim _gate = new(1, 1);
     public PlannerData Data { get; private set; } = new();
+    public event EventHandler? Changed;
 
     public async Task LoadAsync()
     {
@@ -234,6 +235,7 @@ public sealed class PlannerStore(string filePath)
             ValidateData(next);
             await PersistAsync(next);
             Data = next;
+            Changed?.Invoke(this, EventArgs.Empty);
             return result;
         }
         finally { _gate.Release(); }
