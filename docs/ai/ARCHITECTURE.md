@@ -36,7 +36,7 @@ MainPage and CalendarPage host TaskDetailsOverlay above their existing content, 
 
 ChecklistPage is a modal card for immediate subtask checking, including completed occurrences. It stays open when the final item is checked. Nested task/routine editors use the shared SubtaskEditor for draft title/item changes; closing without saving discards the draft.
 
-Native app views are built in C#; compact snapshot rendering is appropriate for personal lists. There is no backend, dependency injection framework, notification scheduler, or separate view-model layer in this version.
+Native app views are built in C#; compact snapshot rendering is appropriate for personal lists. There is no backend, dependency injection framework, or separate view-model layer in this version.
 
 ## Android launcher widgets
 
@@ -45,3 +45,11 @@ Three fixed-size AppWidgetProvider entries expose remaining tasks (1×1), comple
 PlannerStore.Changed fires after a successful persisted mutation. App schedules an asynchronous refresh; the widget updater serializes read-only loads of planner.json and updates every placed instance. Providers can run without a MAUI window. Unreadable data displays an open-app state rather than zero/completed tasks. Periodic updates, an inexact non-waking local-midnight alarm, reboot/package updates and date/time-zone changes refresh counts; Android idle policy can delay background execution. Removing the last count widget cancels the alarm.
 
 Immutable explicit activity PendingIntents distinguish Home and Create task. MainActivity consumes the action once; MainPage queues navigation until loading succeeds, returns to Home, then optionally opens today’s TaskEditorPage. Repeated create taps reuse that shortcut’s already-open editor. Load failure keeps the request pending for retry and never opens an editor over empty fallback data.
+
+## Daily notifications
+
+Home's bell opens NotificationSettingsPage. Android SharedPreferences stores opt-in, sticky mode, a settings generation and the date of ordinary dismissal separately from planner.json. Defaults are off; toggling a setting resets dismissal. Generation/date-specific immutable delete PendingIntents prevent a delayed dismissal from suppressing a newly enabled summary. A semaphore serializes settings changes, dismissals and read-only planner loads; the activity remains the only planner writer.
+
+DailyNotificationSummary uses PlannerQueries.ForDate, filters completion and includes partial checklist progress. Empty dates, all-done dates and unreadable storage have distinct messages. BigText summaries preview up to six tasks, bound payload size and explicitly count omitted tasks. The stable notification ID updates in place with the app's accent/icon, a silent channel, public lock-screen visibility and no tap auto-cancel. Sticky notifications set ongoing and repost on delete broadcasts; ordinary dismissals persist for that local date. Task saves, resume and the foreground date-change hook refresh the summary. Taps reuse the Home shortcut route.
+
+The receiver schedules one next-local-midnight RTC wakeup using SetExactAndAllowWhileIdle when allowed; otherwise it uses SetAndAllowWhileIdle and the UI reports possible delay. Core date arithmetic handles DST gaps/overlaps instead of adding 24 hours. Each refresh recalculates the next alarm; disabling cancels it and the notification. Boot after unlock, package replacement, time/date/time-zone changes and exact-alarm grants recover scheduling without a MAUI window. Notification and exact-alarm access are requested only when enabling. No foreground service or continuous polling is used. Android user privacy/channel choices, force-stop and OEM background restrictions constrain visibility and recovery; the app cannot override them.

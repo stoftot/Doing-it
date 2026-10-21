@@ -16,10 +16,11 @@ Doing it is a personal Android to-do app for organizing today's tasks, persisten
 - To-do list tasks with subtasks, completed/total progress and a checklist popup, available in lists, on dates and as recurring routines.
 - Data survives app restarts and is available offline.
 - Android launcher widgets for today’s remaining count (1×1), completed/total (2×1), and quick task creation (1×1).
+- Opt-in silent daily task summaries, local-midnight delivery, live completion updates and optional sticky lock-screen notifications within Android's permission/privacy limits.
 
 ## Constraints and non-goals
 
-Native .NET MAUI Android only. No web development, server, account, synchronization, notifications, or iOS/desktop targets in this version. All data is local to the Android app. Dates use the phone's local calendar; there are no times of day or time zones attached to tasks.
+Native .NET MAUI Android only. No web development, server, account, synchronization, or iOS/desktop targets in this version. All data is local to the Android app. Dates use the phone's local calendar; there are no times of day or time zones attached to tasks. Notification delivery uses the phone's current local midnight.
 
 ## Enabled technology modules
 

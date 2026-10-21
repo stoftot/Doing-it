@@ -201,5 +201,13 @@ API 36 emulator results cannot prove API 23 minimum support, other OEMs, physica
 keyboard/back/insets/accessibility behavior or all screen sizes. Case 010 needs
 real layout/interaction assessment and restoration of any deliberately changed
 device settings. Launcher widgets need separate background date/boot/idle checks
-and OEM launcher coverage; see PLANNER-012 through PLANNER-015. The app has no
-notifications or OEM hardware features. Report every unexecuted platform/case explicitly.
+and OEM launcher coverage; see PLANNER-012 through PLANNER-015. Daily notifications
+have a separate Managed suite at `tests/android/DailyNotifications.ps1`; select it
+with the same runner contract. [Notification cases](../tests/manual/notifications.md)
+cover midnight, lock-screen privacy, reboot and OEM background restrictions.
+The notification suite requires both app switches off and fewer than six remaining
+tasks so its unique fixture fits the preview. On API 36 it exercises notification
+and exact-alarm access, and temporarily enables an unsecured swipe keyguard if
+needed. It restores these settings and deletes its own fixture. Secure lock-screen
+privacy and real overnight delivery remain separate device checks.
+Report every unexecuted platform/case explicitly.

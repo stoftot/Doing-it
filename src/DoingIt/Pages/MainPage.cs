@@ -118,6 +118,7 @@ public sealed class MainPage : ContentPage
         _today = today;
         ClosePopup();
         Render();
+        AndroidNotifications.DailyNotifications.Refresh();
     }
 
     private void Render()
@@ -134,8 +135,10 @@ public sealed class MainPage : ContentPage
 
     private void RenderHome(VerticalStackLayout content)
     {
-        content.Add(Ui.Between(Ui.Stack(Ui.Eyebrow(_today.ToString("dddd, d MMMM")), Ui.Text("Doing it.", 34, bold: true)),
-            Ui.Icon("calendar", "Open calendar", OpenCalendar, true)));
+        var shortcuts = new HorizontalStackLayout { Spacing = 4 };
+        shortcuts.Add(Ui.Icon("bell", "Notification settings", () => Navigation.PushModalAsync(new NotificationSettingsPage()), true));
+        shortcuts.Add(Ui.Icon("calendar", "Open calendar", OpenCalendar, true));
+        content.Add(Ui.Between(Ui.Stack(Ui.Eyebrow(_today.ToString("dddd, d MMMM")), Ui.Text("Doing it.", 34, bold: true)), shortcuts));
         var due = PlannerQueries.ForDate(_store.Data, _today);
         var remaining = due.Count(t => !t.IsCompleted);
         var hero = Ui.Stack(Ui.Eyebrow("ONE THING AT A TIME"), Ui.Text("A little progress,\nevery day.", 26, Ui.Teal, true),

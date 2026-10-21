@@ -18,7 +18,11 @@ public sealed class App : Application
     {
         UserAppTheme = AppTheme.Light;
         var store = new PlannerStore(Path.Combine(FileSystem.AppDataDirectory, "planner.json"), TaskTitleLayout.Fits);
-        store.Changed += (_, _) => AndroidWidgets.PlannerWidgets.Refresh();
+        store.Changed += (_, _) =>
+        {
+            AndroidWidgets.PlannerWidgets.Refresh();
+            AndroidNotifications.DailyNotifications.Refresh();
+        };
         var page = new MainPage(store);
         _mainPage = page;
         if (_pendingWidgetNavigation is bool createTask)
@@ -31,8 +35,10 @@ public sealed class App : Application
         {
             page.RefreshCurrentDay();
             AndroidWidgets.PlannerWidgets.Refresh();
+            AndroidNotifications.DailyNotifications.Refresh();
         };
         AndroidWidgets.PlannerWidgets.Refresh();
+        AndroidNotifications.DailyNotifications.Refresh();
         return window;
     }
 }

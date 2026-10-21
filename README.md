@@ -9,10 +9,13 @@ A native .NET MAUI Android to-do app. Teal (`#1D4C5E`) and blush (`#D5BBB1`), a 
 - **Task details:** tasks and routines have a required title that fits up to two lines, plus an optional description with no length limit. Rows show the title. Tap it to read the title, description and date/list or recurrence schedule in a popup, with the app still visible behind it. Tap outside, use its close button or press Back to dismiss it.
 - **To-do list tasks:** choose **To-do list** in a new task or routine form, enter a title and subtasks, then save. Tap the list icon or progress control to open its checklist popup. Each check saves immediately; the row shows how many items are done and completes automatically when all are checked. Open a completed checklist and uncheck an item to reopen it. **Edit to-do list** changes its title, description and items; close the editor to cancel unsaved edits.
 - **Android home-screen widgets:** long-press your launcher’s home screen, open Widgets and choose Doing it. **Tasks left today** (1×1) shows the remaining count; **Today’s progress** (2×1) shows completed/total. Both show a checkmark and **All done** when finished, or **No tasks today** on an empty day. Tap either to open Home. **Create task** (1×1) uses the app’s pencil icon and opens the task form with today selected; you can choose another date or a list.
+- **Daily notification:** tap the bell on Home, then enable **Daily notification**. A silent summary appears immediately and refreshes at local midnight. Expand it to read remaining task titles and checklist progress; saved changes update it. **Keep it all day** restores swipe-dismissed notifications and retains an All done message until tomorrow. Tap the notification to open Home. With sticky mode off, dismissal lasts for that date.
 
 A task belongs to either a list or one calendar date. List tasks stay in that list; dated tasks appear only on their date. Each recurring occurrence has its own completion state. Routines start on their creation date. Editing a routine changes its schedule from that start date; completion records are retained for matching dates.
 
-Everything is stored locally in the app's private data directory as `planner.json`, with an atomic replacement and previous-save `.bak`. No account or server is needed. There are no notifications, cloud sync, or web UI. Uninstalling the app can remove local data.
+Everything is stored locally: tasks in the app's private `planner.json`, with an atomic replacement and previous-save `.bak`, and notification preferences in Android private settings. No account, server, cloud sync or web UI is needed. Uninstalling the app can remove local data.
+
+Daily notifications include the same dated tasks and active routines as Home, excluding list-only and completed tasks. They use the app's teal accent and blush checkmark within Android's expandable notification layout. Android limits visible text; long summaries indicate omitted tasks and open the full list on tap. Allow notifications and **Alarms & reminders** when prompted for exact 00:00 delivery, including while idle. Without alarm access, delivery can be delayed. Local midnight is recalculated after each delivery and time-zone change, including daylight saving. Reboot recovery starts after the phone is unlocked. Lock-screen privacy, disabled channels, force-stop, device shutdown and manufacturer restrictions remain under Android's control; sticky mode cannot override them. The app requests public lock-screen visibility and silence, while the phone's settings control final presentation and sound.
 
 Widget totals match Home’s **Today’s tasks** section: dated tasks and active routines, with each checklist counted once. List-only tasks are excluded. All placed copies refresh after saved changes and when the app resumes. Background updates use a periodic refresh and a local-midnight alarm; Android may defer them during sleep or battery restrictions. No exact-alarm permission is required. Launcher grids determine the physical dimensions of each widget.
 
@@ -35,7 +38,8 @@ dotnet test tests/DoingIt.Core.Tests/DoingIt.Core.Tests.csproj
 For shared emulator tests, follow [AndroidTesting integration](docs/android-testing.md).
 It uses the existing environment and reserved runner. The project-owned
 `tests/android/TaskDetails.ps1` Managed suite covers task text and read-only popups;
-select it explicitly. The default Settings smoke is not an app regression test.
+`tests/android/DailyNotifications.ps1` covers notification settings and live updates.
+Select the intended suite explicitly. The default Settings smoke is not an app regression test.
 
 For a separately coordinated, authorized physical phone (not a reserved emulator):
 

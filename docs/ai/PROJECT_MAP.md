@@ -9,6 +9,7 @@
 | `src/DoingIt/Pages/TaskEditorPage.cs` | Mutually exclusive date/list task form |
 | `src/DoingIt/Pages/RecurringEditorPage.cs` | Daily, weekly and monthly schedule form |
 | `src/DoingIt/Pages/CalendarPage.cs` | Shared month/week calendar and dated task actions |
+| `src/DoingIt/Pages/NotificationSettingsPage.cs` | Daily/sticky preferences and Android permission status |
 | `src/DoingIt/Pages/EditorPage.cs` | Shared save/error/modal form handling |
 | `src/DoingIt/Pages/TaskDetailsOverlay.cs` | Read-only task information card and dismissible backdrop |
 | `src/DoingIt/Pages/ChecklistPage.cs`, `SubtaskEditor.cs` | Checklist popup, per-date checking and draft subtask forms |
@@ -16,9 +17,12 @@
 | `src/DoingIt/Platforms/Android/` | Android activity, manifest and theme |
 | `src/DoingIt/Platforms/Android/TaskTitleLayout.cs` | Native two-line title measurement for saves and migration |
 | `src/DoingIt/Platforms/Android/Widgets/`, `Platforms/Android/Resources/` | Launcher widget providers, persisted counts, refresh scheduling and native layouts |
+| `src/DoingIt/Platforms/Android/Notifications/` | Silent notification rendering, preference/dismissal storage, alarm and broadcast lifecycle |
+| `src/DoingIt.Core/DailyNotification.cs` | Remaining-task summary and DST-aware local-midnight calculation |
 | `src/DoingIt.Core/` | Domain records, date queries, validation and atomic JSON storage |
 | `tests/DoingIt.Core.Tests/` | xUnit domain and file-storage regression tests |
 | `tests/android/TaskDetails.ps1` | Managed Appium regression suite for task text and read-only popups |
+| `tests/android/DailyNotifications.ps1`, `tests/manual/notifications.md` | Managed notification regression suite and device/background cases |
 | `tests/manual/planner.md` | Reusable Android interaction cases |
 | `tooling/build-android.ps1` | Native Android build with Windows Unicode-path workaround |
 | `docs/android-testing.md` | Shared AndroidTesting discovery, device/session ownership and project UI integration contract |
@@ -33,6 +37,7 @@ Dependency direction: `DoingIt` and `DoingIt.Core.Tests` reference `DoingIt.Core
 - Scheduled view: PlannerQueries.ForDate combines exact-date tasks and active recurrence rules; completion is keyed by routine ID and date.
 - Views refresh when modal editors close and Home's local date changes/resumes.
 - Widget taps: explicit MainActivity intent -> App -> queued MainPage navigation after successful load. Widget counts read persisted data through TodayProgress/PlannerQueries.
+- Notification refresh: saved mutation/resume/midnight/system broadcast -> serialized read-only planner load -> one notification; settings are separate Android preferences. Notification taps reuse queued Home navigation.
 
 ## Generated and external areas
 

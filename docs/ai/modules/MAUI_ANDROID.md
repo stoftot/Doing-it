@@ -10,9 +10,10 @@
 | Entry | `Platforms/Android/MainActivity.cs` -> MainApplication -> MauiProgram -> App |
 | Native UI | C# MAUI controls, modal editors and shared calendar; no WebView/Blazor |
 | Launcher widgets | Native RemoteViews: remaining 1×1, completed/total 2×1, create task 1×1; lifecycle and refresh ownership in [architecture](../ARCHITECTURE.md#android-launcher-widgets) |
+| Notifications | Daily/sticky summary, POST_NOTIFICATIONS and user-granted SCHEDULE_EXACT_ALARM; lifecycle in [architecture](../ARCHITECTURE.md#daily-notifications) |
 | SDK | `global.json`: .NET 10.0.402, latestPatch roll forward |
 | Shared emulator route | Explicit opt-in in root AGENTS.md; [integration guide](../../android-testing.md) |
-| Project UI harness/device config | `tests/android/TaskDetails.ps1` Managed Appium suite; no `android-testing.json` |
+| Project UI harness/device config | `tests/android/TaskDetails.ps1` and `tests/android/DailyNotifications.ps1` Managed Appium suites; no `android-testing.json` |
 
 ## Build and deployment
 

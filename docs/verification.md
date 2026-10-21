@@ -35,8 +35,11 @@ version or update its release records.
 
 For actual app changes/tests, follow [Android integration](android-testing.md) and
 [module facts](ai/modules/MAUI_ANDROID.md). Existing automated coverage is the core
-xUnit project and the `tests/android/TaskDetails.ps1` Managed Appium suite for task
-text and details popups. The [planner manual cases](../tests/manual/planner.md)
+xUnit project, `tests/android/TaskDetails.ps1` for task text/details, and
+`tests/android/DailyNotifications.ps1` for notification preferences, completion,
+dismissal and alarm scheduling through Managed Appium sessions. The
+[notification cases](../tests/manual/notifications.md) retain overnight/reboot,
+privacy and OEM checks. The [planner manual cases](../tests/manual/planner.md)
 cover the wider app, checklists and widgets. The broader acceptance below remains
 necessary before advancing the root review marker:
 
