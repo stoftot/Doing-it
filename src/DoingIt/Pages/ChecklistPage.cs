@@ -138,11 +138,11 @@ public sealed class ChecklistPage : ContentPage
         finally { RefreshProgress(); _busy = false; _rows.IsEnabled = true; }
     }
 
-    private Task Close() => _busy ? Task.CompletedTask : Navigation.PopModalAsync();
+    private Task Close() => _busy ? Task.CompletedTask : ModalNavigation.CloseAsync(this);
 
     private Task Edit() => _busy ? Task.CompletedTask : _recurring
-        ? Navigation.PushModalAsync(new RecurringEditorPage(_store, _store.Data.RecurringTasks.First(task => task.Id == _id)))
-        : Navigation.PushModalAsync(new TaskEditorPage(_store, _store.Data.Tasks.First(task => task.Id == _id)));
+        ? ModalNavigation.PushAsync(this, () => new RecurringEditorPage(_store, _store.Data.RecurringTasks.First(task => task.Id == _id)))
+        : ModalNavigation.PushAsync(this, () => new TaskEditorPage(_store, _store.Data.Tasks.First(task => task.Id == _id)));
 
-    protected override bool OnBackButtonPressed() => _busy || base.OnBackButtonPressed();
+    protected override bool OnBackButtonPressed() => _busy || ModalNavigation.HandleBack(this);
 }

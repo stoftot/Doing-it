@@ -17,7 +17,7 @@ public sealed class CalendarPage : ContentPage
     {
         _store = store;
         Ui.ConfigurePage(this);
-        var header = Ui.ModalHeader("A little look ahead", async () => await Navigation.PopModalAsync());
+        var header = Ui.ModalHeader("A little look ahead", () => _busy ? Task.CompletedTask : ModalNavigation.CloseAsync(this));
         header.Margin = new Thickness(22, 12, 16, 12);
         _root.Add(header);
         _root.Add(new ScrollView { Content = _body }, 0, 1);
@@ -93,7 +93,7 @@ public sealed class CalendarPage : ContentPage
         {
             if (task.IsChecklist)
             {
-                tasks.Add(MainPage.ChecklistRow(task, () => Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, task.IsRecurring, _selected)), () => ShowDetails(task)));
+                tasks.Add(MainPage.ChecklistRow(task, () => ModalNavigation.PushAsync(this, () => new ChecklistPage(_store, task.Id, task.IsRecurring, _selected)), () => ShowDetails(task)));
                 continue;
             }
             var check = new CheckBox { Color = Ui.Teal, IsChecked = task.IsCompleted, WidthRequest = 44, HeightRequest = 48 };
@@ -107,12 +107,12 @@ public sealed class CalendarPage : ContentPage
             if (task.IsRecurring) text.Add(Ui.Text("Recurring", 10, Ui.Muted));
             row.Add(text, 1);
             row.Add(Ui.Icon("edit", "Edit " + task.Title, () => task.IsRecurring
-                ? Navigation.PushModalAsync(new RecurringEditorPage(_store, _store.Data.RecurringTasks.First(t => t.Id == task.Id)))
-                : Navigation.PushModalAsync(new TaskEditorPage(_store, _store.Data.Tasks.First(t => t.Id == task.Id)))), 2);
+                ? ModalNavigation.PushAsync(this, () => new RecurringEditorPage(_store, _store.Data.RecurringTasks.First(t => t.Id == task.Id)))
+                : ModalNavigation.PushAsync(this, () => new TaskEditorPage(_store, _store.Data.Tasks.First(t => t.Id == task.Id)))), 2);
             tasks.Add(row);
         }
         _body.Add(Ui.Card(tasks));
-        _body.Add(Ui.Button("+  Add task for this day", () => Navigation.PushModalAsync(new TaskEditorPage(_store, date: _selected)), id: "AddCalendarTask"));
+        _body.Add(Ui.Button("+  Add task for this day", () => ModalNavigation.PushAsync(this, () => new TaskEditorPage(_store, date: _selected)), id: "AddCalendarTask"));
         _body.Add(Ui.Text("List tasks live in your lists. Only dated tasks and active routines appear here.", 12, Ui.Muted));
     }
 
@@ -143,7 +143,8 @@ public sealed class CalendarPage : ContentPage
 
     protected override bool OnBackButtonPressed()
     {
-        if (_details is null) return base.OnBackButtonPressed();
+        if (_busy) return true;
+        if (_details is null) return ModalNavigation.HandleBack(this);
         CloseDetails();
         return true;
     }

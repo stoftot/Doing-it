@@ -182,6 +182,14 @@ and fixtures. Leave shared Appium/ADB/emulators running; any deliberate later st
 must respect active reservations/sessions and ownership. Never kill all Node/ADB
 processes, run `adb kill-server`, wipe, uninstall or reset as routine cleanup.
 
+The additional Managed suites `tests/android/Navigation.ps1` (PLANNER-017) and
+`tests/android/Startup.ps1` (PLANNER-018) use the same reserved runner contract.
+Navigation tests rapid taps, parent-page ownership and single-save behavior;
+Startup intentionally restarts only Doing it and checks cold launch and resume.
+Use the Release APK for everyday-build validation, as described in the root
+README. Both suites preserve existing planner data; Navigation cleans its own
+unique task. These checks do not replace physical-phone or overnight coverage.
+
 ## Physical phones and coverage limits
 
 The shared runner/reservation tools support emulator serials only. Keep physical

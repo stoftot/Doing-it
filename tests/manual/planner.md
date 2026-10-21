@@ -388,3 +388,53 @@ Verify that task titles remain short and readable while unlimited optional detai
 
 ### Cleanup
 - Delete only the `QA Text` tasks and routine created in this run, then remove the checklist and its subtasks through the task editor.
+
+## PLANNER-017 — Rapid modal navigation and dismissal
+
+### Purpose
+Protect modal-stack integrity when taps, Save or Delete confirmation, Close, Android Back, nested checklist editors, and widget navigation arrive while a page transition is still in flight.
+
+### Preconditions
+- Use a test installation with existing unrelated planner data left intact. Record the app process ID and the current Android fatal-crash log position without clearing logcat.
+- Have an existing checklist task that can be edited and a Create task widget if testing the launcher route. Use a unique `QA Navigation` title for any saved fixture.
+
+### Steps
+1. On Home, locate the Add today's task control and tap its center five times in quick succession. Close the editor once. Repeat on Lists > New task, Recurring > Create recurring task, and Calendar > Add task for this day. After each open burst, verify that one editor is visible; after one close, verify that its original main page or Calendar parent is visible and no second editor remains.
+2. Open a task editor and rapidly combine its Close control with Android Back. Repeat with rapid Close taps. Verify the app remains responsive, shows the expected parent page, and does not return to a stale editor. Repeat an open-and-close burst on each entry point for several cycles.
+3. Open a new task editor and save with a blank title. Dismiss the validation message, enter the unique `QA Navigation` title, and tap Save repeatedly while the save transition is running. Verify the editor closes once and the task appears once. Edit this test-owned task, invoke Delete task, and rapidly tap the confirmation choice while also testing Keep task/Android Back in a separate run; verify the expected confirmation outcome and no duplicate modal.
+4. Open a checklist, choose Edit to-do list, and close the nested editor once. Verify the checklist remains visible, then close the checklist and verify its original parent. Repeat by using Android Back at the nested editor and checklist levels. While a checklist Save is in progress, try its Close control and verify the saved parent returns once.
+5. Start a Save from a task editor, then tap a launcher Create task widget or a task-navigation widget before the transition settles. Verify the widget waits for the in-flight change and reaches its intended page without stacking another editor. Repeat while a Delete confirmation is open if that route is available.
+6. Across all stress cycles, confirm the app process ID is unchanged. Inspect the unfiltered relevant logcat entries for new fatal traces after the recorded baseline.
+
+### Expected result
+- Repeated or stale taps produce at most one shared modal transition. One Close or Back dismisses only the topmost page; a nested task editor returns to its checklist, and the checklist returns to its prior page.
+- Save validation leaves the editor available for correction. Repeated Save persists one task and returns once. Delete confirmation and cancellation each resolve once; Close, Save, Delete and Android Back do not pop an empty modal stack.
+- Navigation requests from widgets wait for an in-flight editor transition. The app stays alive with the same process ID and no new fatal crash entry. Unrelated planner data remains unchanged; cleanup removes only the unique test-owned task.
+
+### Cleanup
+- Delete only the unique `QA Navigation` task created by this case. Preserve all pre-existing planner data and restore any temporary launcher placement.
+
+## PLANNER-018 — Repeated cold start and resume stability
+
+### Purpose
+Catch Android runtime startup failures that appear while the first page loads assemblies or while the activity backgrounds and resumes.
+
+### Preconditions
+- Use the normal Managed Android test session and a compatible installed build. Preserve planner data; do not clear app storage, uninstall, or reset the device.
+- Record the device serial, app package, build configuration (Debug or Release), initial app PID, device time, and current logcat position. Keep the screen awake during the run.
+
+### Steps
+1. Confirm Home is visible, then force-stop and launch the app through Appium. Wait for Home and confirm there is no planner-load or navigation failure overlay.
+2. Hold on the first page for three seconds. Record the app PID before and after the hold; it must stay the same.
+3. Press Android HOME, confirm the process remains alive, then resume the app once through Appium. Confirm Home returns and the PID remains the same.
+4. Repeat the force-stop, launch, three-second hold, HOME, and resume sequence 20 times. Do not automatically retry a failed launch. On any failure, immediately save full unfiltered device logcat and record the cycle and PID.
+5. Review AndroidRuntime fatal exception entries for `com.doingit.app` and native fatal signal entries associated with the app or its recorded PIDs.
+6. Repeat separately with Debug and Release builds when comparing runtime behavior; do not infer Release stability from a Debug-only run or the reverse.
+
+### Expected result
+- Every launch reaches Home without a planner recovery or navigation failure overlay. The process stays alive throughout the three-second first-page hold, HOME backgrounding, and resume; process IDs may differ between force-stopped launches but remain unchanged within each cycle.
+- All requested cycles complete with no app-specific managed fatal exception or native fatal signal. Existing tasks, lists, routines, and completion state remain intact.
+- Debug and Release results are recorded independently with the build configuration, Android version, device model, and unfiltered logs needed to diagnose any failure.
+
+### Cleanup
+- No planner data cleanup is required. Leave the app open on Home and restore the device's original screen or power settings if they were changed for the run.

@@ -32,6 +32,15 @@ Existing invalid data causes a visible load failure and is left intact. The UI o
 
 MainPage owns three tab bodies and the completed-task overlay. Task/recurrence editors save through PlannerStore then dismiss; the parent refreshes on appearing. CalendarPage queries selected local dates in month/week views. A timer and window resume hook refresh Home at a local date change.
 
+ModalNavigation serializes page transitions per Window. UI requests acquire the
+gate before constructing an editor or awaiting an animation; repeat taps and
+callbacks from pages that are no longer current are ignored. A close may only pop
+its own topmost page. Editor saves and delete confirmations hold the same gate
+through persistence and dismissal, including Android Back. Widget/notification
+shortcuts wait for that operation before changing the stack. Navigation exceptions
+are logged to Android and reported on the current page without escaping async UI
+event handlers. Persistence errors keep the form open for correction/retry.
+
 MainPage and CalendarPage host TaskDetailsOverlay above their existing content, keeping the app visible behind a dimmed backdrop. Task titles open this read-only card, including completed tasks and routine definitions; it shows title, optional description, and either date/list or the routine schedule. The card bounds its scrollable content to the available height. Backdrop, close button and Android Back dismiss it without mutating state. Checklist icons/progress retain the separate interactive checklist action.
 
 ChecklistPage is a full-page modal with a scrollable progress summary and item cards, plus fixed heading and edit/close actions. Checking updates existing controls from the persisted snapshot, preserving scroll position; returning from a nested editor rebuilds the content to reflect definition changes. It stays open when the final item is checked, including completed occurrences. Nested task/routine editors use the shared SubtaskEditor for draft title/item changes; closing without saving discards the draft. Keyboard Next focuses the next item or creates a new draft. Blank new drafts are omitted on save; clearing a saved item's title still invokes normal validation, preserving explicit removal and stable IDs.

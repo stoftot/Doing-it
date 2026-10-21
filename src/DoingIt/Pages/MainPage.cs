@@ -85,23 +85,26 @@ public sealed class MainPage : ContentPage
         _openingWidget = true;
         try
         {
-            while (_widgetNavigation is bool createTask)
+            await ModalNavigation.RunShortcutAsync(this, async () =>
             {
-                _widgetNavigation = null;
-                if (createTask && _widgetEditor is not null && Navigation.ModalStack.LastOrDefault() == _widgetEditor)
-                    continue;
-                while (Navigation.ModalStack.Count > 0)
-                    await Navigation.PopModalAsync(false);
-                _tab = 0;
-                ClosePopup();
-                Render();
-                await _scroll.ScrollToAsync(0, 0, false);
-                if (createTask)
+                while (_widgetNavigation is bool createTask)
                 {
-                    _widgetEditor = new TaskEditorPage(_store, date: DateOnly.FromDateTime(DateTime.Today));
-                    await Navigation.PushModalAsync(_widgetEditor);
+                    _widgetNavigation = null;
+                    if (createTask && _widgetEditor is not null && Navigation.ModalStack.LastOrDefault() == _widgetEditor)
+                        continue;
+                    while (Navigation.ModalStack.Count > 0)
+                        await Navigation.PopModalAsync(false);
+                    _tab = 0;
+                    ClosePopup();
+                    Render();
+                    await _scroll.ScrollToAsync(0, 0, false);
+                    if (createTask)
+                    {
+                        _widgetEditor = new TaskEditorPage(_store, date: DateOnly.FromDateTime(DateTime.Today));
+                        await Navigation.PushModalAsync(_widgetEditor);
+                    }
                 }
-            }
+            });
         }
         catch (Exception ex)
         {
@@ -136,7 +139,7 @@ public sealed class MainPage : ContentPage
     private void RenderHome(VerticalStackLayout content)
     {
         var shortcuts = new HorizontalStackLayout { Spacing = 4 };
-        shortcuts.Add(Ui.Icon("bell", "Notification settings", () => Navigation.PushModalAsync(new NotificationSettingsPage()), true));
+        shortcuts.Add(Ui.Icon("bell", "Notification settings", () => ModalNavigation.PushAsync(this, () => new NotificationSettingsPage()), true));
         shortcuts.Add(Ui.Icon("calendar", "Open calendar", OpenCalendar, true));
         content.Add(Ui.Between(Ui.Stack(Ui.Eyebrow(_today.ToString("dddd, d MMMM")), Ui.Text("Doing it.", 34, bold: true)), shortcuts));
         var due = PlannerQueries.ForDate(_store.Data, _today);
@@ -178,7 +181,7 @@ public sealed class MainPage : ContentPage
             {
                 var occurrence = PlannerQueries.ForDate(_store.Data, _today).FirstOrDefault(item => item.IsRecurring && item.Id == task.Id);
                 details.Add(Ui.Quiet(occurrence is null ? $"To-do list · {task.Subtasks.Length} subtasks" : occurrence.ProgressLabel + " today",
-                    () => Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, true, occurrence is null ? null : _today))));
+                    () => ModalNavigation.PushAsync(this, () => new ChecklistPage(_store, task.Id, true, occurrence is null ? null : _today))));
             }
             var card = Ui.Stack(Ui.Between(details, enabled), Ui.Rule(),
                 Ui.Between(Ui.Text(task.IsEnabled ? "●  Active" : "○  Paused", 12, task.IsEnabled ? Ui.Teal : Ui.Muted),
@@ -288,8 +291,11 @@ public sealed class MainPage : ContentPage
 
     private Task OpenChecklist(DueTask task, DateOnly? date)
     {
-        ClosePopup();
-        return Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, task.IsRecurring, task.IsRecurring ? date ?? _today : null));
+        return ModalNavigation.PushAsync(this, () =>
+        {
+            ClosePopup();
+            return new ChecklistPage(_store, task.Id, task.IsRecurring, task.IsRecurring ? date ?? _today : null);
+        });
     }
 
     private Task Complete(DueTask task, DateOnly? date, bool value) => task.IsRecurring
@@ -372,17 +378,17 @@ public sealed class MainPage : ContentPage
         _navigation.Content = nav;
     }
 
-    private Task OpenTask(TaskItem? item = null, string? listId = null, DateOnly? date = null) => Navigation.PushModalAsync(new TaskEditorPage(_store, item, listId, date));
-    private Task OpenRecurring(RecurringTask? item = null) => Navigation.PushModalAsync(new RecurringEditorPage(_store, item));
-    private Task OpenCalendar() => Navigation.PushModalAsync(new CalendarPage(_store));
+    private Task OpenTask(TaskItem? item = null, string? listId = null, DateOnly? date = null) => ModalNavigation.PushAsync(this, () => new TaskEditorPage(_store, item, listId, date));
+    private Task OpenRecurring(RecurringTask? item = null) => ModalNavigation.PushAsync(this, () => new RecurringEditorPage(_store, item));
+    private Task OpenCalendar() => ModalNavigation.PushAsync(this, () => new CalendarPage(_store));
 
-    private async Task CreateList()
+    private Task CreateList() => ModalNavigation.RunAsync(this, async () =>
     {
         var name = await DisplayPromptAsync("A new little list", "Give your list a name.", "Create", "Cancel", "e.g. Around the house", 40);
         if (name is not null) await Change(async () => { await _store.AddListAsync(name); });
-    }
+    });
 
-    private async Task ManageList(TaskList list)
+    private Task ManageList(TaskList list) => ModalNavigation.RunAsync(this, async () =>
     {
         var action = await DisplayActionSheetAsync(list.Name, "Cancel", "Delete list", "Rename list");
         if (action == "Rename list")
@@ -392,10 +398,11 @@ public sealed class MainPage : ContentPage
         }
         else if (action == "Delete list" && await DisplayAlertAsync("Delete this list?", "Its tasks will move to General, including completed tasks.", "Delete list", "Keep list"))
             await Change(() => _store.DeleteListAsync(list.Id));
-    }
+    });
 
     protected override bool OnBackButtonPressed()
     {
+        if (ModalNavigation.IsBusy(this)) return true;
         if (_details is not null) { CloseDetails(); return true; }
         if (_popup is not null) { ClosePopup(); return true; }
         if (_tab != 0) { _tab = 0; Render(); return true; }

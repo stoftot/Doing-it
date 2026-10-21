@@ -30,7 +30,7 @@ Requires the .NET 10 SDK selected by `global.json`, `maui-android` workload, JDK
 From PowerShell 7 at the repository root:
 
 ```powershell
-./tooling/build-android.ps1
+./tooling/build-android.ps1 -Configuration Release
 
 dotnet test tests/DoingIt.Core.Tests/DoingIt.Core.Tests.csproj
 ```
@@ -39,17 +39,27 @@ For shared emulator tests, follow [AndroidTesting integration](docs/android-test
 It uses the existing environment and reserved runner. The project-owned
 `tests/android/TaskDetails.ps1` Managed suite covers task text and read-only popups;
 `tests/android/DailyNotifications.ps1` covers notification settings and live updates.
+`tests/android/Navigation.ps1` exercises rapid open/close/save input, and
+`tests/android/Startup.ps1` checks repeated cold starts and background/resume.
 Select the intended suite explicitly. The default Settings smoke is not an app regression test.
 
 For a separately coordinated, authorized physical phone (not a reserved emulator):
 
 ```powershell
 adb devices -l
-adb -s <device-serial> install -r src/DoingIt/bin/Debug/net10.0-android/com.doingit.app-Signed.apk
+adb -s <device-serial> install -r src/DoingIt/bin/Release/net10.0-android/com.doingit.app-Signed.apk
 adb -s <device-serial> shell monkey -p com.doingit.app -c android.intent.category.LAUNCHER 1
 ```
 
 `build-android.ps1` imports the local SDK environment and temporarily maps a free drive letter when Windows paths contain non-ASCII characters. This avoids Android AAPT2's Unicode-path limitation without moving source. The mapping is removed after the build. `-Configuration Release` builds the release configuration; distribution signing is separate.
+
+Use Release for ordinary phone use. The installed .NET Android 36.1.69 Debug
+runtime has a reported concurrent assembly-loading crash matching a captured
+emulator startup failure ([dotnet/android #13065](https://github.com/dotnet/android/issues/13065)).
+Release packages use the assembly store and avoid that individual-assembly path.
+Keep Debug for development (`-Configuration Debug`); the script still defaults to
+Debug. This workaround does not claim an upstream runtime fix or eliminate every
+possible crash. Reinstall with `-r` and the existing signing identity to preserve data.
 
 The app targets Android API 36 with Android 6.0 (API 23) as its minimum. Debug APKs embed their assemblies so they can be installed directly with adb. The application ID is `com.doingit.app`.
 

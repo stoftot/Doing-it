@@ -13,13 +13,18 @@
 | Notifications | Daily/sticky summary, POST_NOTIFICATIONS and user-granted SCHEDULE_EXACT_ALARM; lifecycle in [architecture](../ARCHITECTURE.md#daily-notifications) |
 | SDK | `global.json`: .NET 10.0.402, latestPatch roll forward |
 | Shared emulator route | Explicit opt-in in root AGENTS.md; [integration guide](../../android-testing.md) |
-| Project UI harness/device config | `tests/android/TaskDetails.ps1` and `tests/android/DailyNotifications.ps1` Managed Appium suites; no `android-testing.json` |
+| Project UI harness/device config | `tests/android/TaskDetails.ps1`, `DailyNotifications.ps1`, `Navigation.ps1` and `Startup.ps1` Managed Appium suites; no `android-testing.json` |
 
 ## Build and deployment
 
 Build with `./tooling/build-android.ps1` from PowerShell 7. The script imports SDK/JDK environment discovery and aliases a non-ASCII Windows checkout path for AAPT2. It does not move source or install tools. Output is `src/DoingIt/bin/Debug/net10.0-android/com.doingit.app-Signed.apk`; Release uses the corresponding Release directory.
 
 Assemblies are embedded in the APK. There is no explicit project RID; the existing Debug signed APK contains `arm64-v8a` and `x86_64` native libraries. Verify the fresh output/ABI for each test run rather than assuming the central README's `android-x64` output subdirectory. This is a development-signed package; store distribution and release signing have not been configured.
+
+Use `-Configuration Release` for ordinary phone installs; the root README owns
+the Debug runtime assembly-loading issue and workaround. Release outputs use the
+same package/signing identity and contain an assembly store for each ABI. Test the
+chosen configuration: Debug-only checks do not establish Release trimming behavior.
 
 For emulator testing use the shared `Invoke-AndroidTests.ps1` runner with the existing `MAUI_Shared_Android` AVD and the project-owned `tests/android/TaskDetails.ps1` Managed suite, as described in the integration guide. The runner reserves devices/ports, deploys and resolves the launcher activity. No Doing it-owned device is registered; do not borrow the tool's validation device or create one automatically. Other planner/device cases remain in the manual specifications.
 

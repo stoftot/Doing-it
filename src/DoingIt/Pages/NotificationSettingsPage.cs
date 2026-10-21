@@ -32,7 +32,7 @@ public sealed class NotificationSettingsPage : ContentPage
         body.Padding = new Thickness(24, 8, 24, 28);
         body.Spacing = 22;
         var root = new Grid { RowDefinitions = [new(GridLength.Auto), new(GridLength.Star)] };
-        var header = Ui.ModalHeader("Notifications", async () => { if (!_saving) await Navigation.PopModalAsync(); });
+        var header = Ui.ModalHeader("Notifications", () => _saving ? Task.CompletedTask : ModalNavigation.CloseAsync(this));
         header.Margin = new Thickness(24, 12, 16, 12);
         root.Add(header);
         root.Add(new ScrollView { Content = body }, 0, 1);
@@ -100,5 +100,5 @@ public sealed class NotificationSettingsPage : ContentPage
         catch (Exception) { await DisplayAlertAsync("Open phone settings", "Open your phone's Settings, then Apps → Doing it, to change notification or alarm permissions.", "OK"); }
     }
 
-    protected override bool OnBackButtonPressed() => _saving || base.OnBackButtonPressed();
+    protected override bool OnBackButtonPressed() => _saving || ModalNavigation.HandleBack(this);
 }

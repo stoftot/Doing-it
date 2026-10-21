@@ -10,7 +10,7 @@ public abstract class EditorPage : ContentPage
     {
         Ui.ConfigurePage(this);
         var root = new Grid { RowDefinitions = [new(GridLength.Auto), new(GridLength.Star), new(GridLength.Auto)] };
-        var header = Ui.ModalHeader(title, async () => { if (!_saving) await Navigation.PopModalAsync(); });
+        var header = Ui.ModalHeader(title, () => _saving ? Task.CompletedTask : ModalNavigation.CloseAsync(this));
         header.Margin = new Thickness(24, 12, 16, 12);
         root.Add(header);
         root.Add(new ScrollView { Content = Body }, 0, 1);
@@ -22,29 +22,30 @@ public abstract class EditorPage : ContentPage
 
     protected abstract Task Persist();
 
-    private async Task Save()
+    private Task Save() => CommitAndClose(async () => { await Persist(); return true; });
+
+    protected Task Delete(Func<Task> delete, string explanation) => CommitAndClose(async () =>
     {
-        if (_saving) return;
+        if (!await DisplayAlertAsync("Delete this task?", explanation, "Delete", "Keep task")) return false;
+        await delete();
+        return true;
+    });
+
+    private async Task CommitAndClose(Func<Task<bool>> action)
+    {
+        if (_saving || ModalNavigation.IsBusy(this)) return;
         _saving = true;
         _save.IsEnabled = false;
         try
         {
-            await Persist();
-            await Navigation.PopModalAsync();
+            await ModalNavigation.CloseAsync(this, async () =>
+            {
+                try { return await action(); }
+                catch (Exception ex) { await Ui.Error(this, ex); return false; }
+            });
         }
-        catch (Exception ex) { await Ui.Error(this, ex); }
         finally { _saving = false; _save.IsEnabled = true; }
     }
 
-    protected async Task Delete(Func<Task> delete, string explanation)
-    {
-        if (_saving || !await DisplayAlertAsync("Delete this task?", explanation, "Delete", "Keep task")) return;
-        _saving = true;
-        _save.IsEnabled = false;
-        try { await delete(); await Navigation.PopModalAsync(); }
-        catch (Exception ex) { await Ui.Error(this, ex); }
-        finally { _saving = false; _save.IsEnabled = true; }
-    }
-
-    protected override bool OnBackButtonPressed() => _saving || base.OnBackButtonPressed();
+    protected override bool OnBackButtonPressed() => _saving || ModalNavigation.HandleBack(this);
 }
