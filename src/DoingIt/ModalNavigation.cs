@@ -62,6 +62,7 @@ internal static class ModalNavigation
 
     private static async Task ReportError(Window window, Exception exception)
     {
+        CrashDiagnostics.RecordNavigationError(exception);
         Android.Util.Log.Error("DoingIt.Navigation", exception.ToString());
         var current = window.Page?.Navigation.ModalStack.LastOrDefault()
             ?? (window.Page as NavigationPage)?.CurrentPage ?? window.Page;

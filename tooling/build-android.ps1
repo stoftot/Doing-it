@@ -1,4 +1,4 @@
-param([ValidateSet('Debug', 'Release')][string]$Configuration = 'Debug')
+param([ValidateSet('Debug', 'Release')][string]$Configuration = 'Debug', [switch]$DiagnosticTestHooks)
 $ErrorActionPreference = 'Stop'
 $repositoryRoot = [IO.Path]::GetFullPath((Split-Path $PSScriptRoot -Parent))
 . "$PSScriptRoot/enter-env.ps1" -Modules dotnet,maui
@@ -22,7 +22,7 @@ try {
         if (!$mappedDrive) { throw 'No free drive letter for the Android build. Use an ASCII-only checkout path.' }
     }
 
-    & dotnet build (Join-Path $buildRoot 'src/DoingIt/DoingIt.csproj') -c $Configuration --nologo -v minimal
+    & dotnet build (Join-Path $buildRoot 'src/DoingIt/DoingIt.csproj') -c $Configuration "-p:DiagnosticTestHooks=$($DiagnosticTestHooks.IsPresent.ToString().ToLowerInvariant())" --nologo -v minimal
     if ($LASTEXITCODE -ne 0) { throw "Android build failed with exit code $LASTEXITCODE." }
     Write-Host "APK: $(Join-Path $repositoryRoot "src/DoingIt/bin/$Configuration/net10.0-android/com.doingit.app-Signed.apk")"
 }

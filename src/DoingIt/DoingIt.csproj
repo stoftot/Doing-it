@@ -14,6 +14,8 @@
     <SupportedOSPlatformVersion>23.0</SupportedOSPlatformVersion>
     <AndroidPackageFormats>apk</AndroidPackageFormats>
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <DiagnosticBuildStamp>$([System.DateTime]::UtcNow.ToString("yyyyMMddTHHmmssZ"))</DiagnosticBuildStamp>
+    <DefineConstants Condition="'$(DiagnosticTestHooks)' == 'true'">$(DefineConstants);DIAGNOSTIC_TEST_HOOKS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#1D4C5E" />
@@ -22,6 +24,10 @@
     <MauiFont Include="Resources\Fonts\*" />
   </ItemGroup>
   <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>DiagnosticBuild</_Parameter1>
+      <_Parameter2>$(DiagnosticBuildStamp)</_Parameter2>
+    </AssemblyAttribute>
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <ProjectReference Include="..\DoingIt.Core\DoingIt.Core.csproj" />
   </ItemGroup>

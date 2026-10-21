@@ -12,6 +12,8 @@
 | `src/DoingIt/Pages/NotificationSettingsPage.cs` | Daily/sticky preferences and Android permission status |
 | `src/DoingIt/Pages/EditorPage.cs` | Shared save/error/modal form handling |
 | `src/DoingIt/ModalNavigation.cs` | Per-window navigation gate, current-page ownership, guarded dismissal and queued shortcuts |
+| `src/DoingIt/Platforms/Android/CrashDiagnostics.cs`, `src/DoingIt/Pages/DiagnosticsPage.cs` | Local fatal capture, Android exit import, report viewing and user-initiated sharing |
+| `src/DoingIt.Core/DiagnosticReports.cs`, `docs/diagnostics.md` | Bounded report storage/export and diagnostic usage/limits |
 | `src/DoingIt/Pages/TaskDetailsOverlay.cs` | Read-only task information card and dismissible backdrop |
 | `src/DoingIt/Pages/ChecklistPage.cs`, `SubtaskEditor.cs` | Checklist page, per-date checking and draft item forms |
 | `src/DoingIt/Ui.cs`, `Resources/` | Palette, native UI building blocks, fonts and vector icons |
@@ -24,6 +26,7 @@
 | `tests/DoingIt.Core.Tests/` | xUnit domain and file-storage regression tests |
 | `tests/android/TaskDetails.ps1` | Managed Appium regressions for task text, read-only popups and checklist entry/editing/progress |
 | `tests/android/Navigation.ps1`, `tests/android/Startup.ps1` | Managed rapid-navigation, duplicate-save, cold-start and resume regressions |
+| `tests/android/Diagnostics.ps1`, `tests/manual/diagnostics.md` | Controlled crash recovery, report persistence, sharing and deletion cases |
 | `tests/android/DailyNotifications.ps1`, `tests/manual/notifications.md` | Managed notification regression suite and device/background cases |
 | `tests/manual/planner.md` | Reusable Android interaction cases |
 | `tooling/build-android.ps1` | Native Android build with Windows Unicode-path workaround |

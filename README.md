@@ -63,6 +63,14 @@ possible crash. Reinstall with `-r` and the existing signing identity to preserv
 
 The app targets Android API 36 with Android 6.0 (API 23) as its minimum. Debug APKs embed their assemblies so they can be installed directly with adb. The application ID is `com.doingit.app`.
 
+## Crash reports
+
+Crash details are collected locally for later investigation. After an unexpected
+exit, reopen the app, then choose **Home → Crash reports → Share diagnostics**.
+Attach the exported ZIP when reporting the problem. Nothing is uploaded
+automatically. See [local crash reports](docs/diagnostics.md) for retention,
+privacy, system-trace limits and test procedures.
+
 ## Source and checks
 
 - [Project map](docs/ai/PROJECT_MAP.md) and [architecture](docs/ai/ARCHITECTURE.md).

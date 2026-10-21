@@ -11,5 +11,12 @@ public class MainApplication : MauiApplication
     {
     }
 
+    public override void OnCreate()
+    {
+        CrashDiagnostics.Initialize(this);
+        base.OnCreate();
+        _ = CrashDiagnostics.CollectPreviousExitsAsync();
+    }
+
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }

@@ -120,6 +120,7 @@ internal static class Ui
         page.BackgroundColor = Paper;
         page.SafeAreaEdges = SafeAreaEdges.All;
         NavigationPage.SetHasNavigationBar(page, false);
+        page.Appearing += (_, _) => CrashDiagnostics.Breadcrumb(page.GetType().Name);
     }
 
     public static View PageHeading(string title, string subtitle, View? trailing = null)

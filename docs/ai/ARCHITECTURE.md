@@ -47,6 +47,23 @@ ChecklistPage is a full-page modal with a scrollable progress summary and item c
 
 Native app views are built in C#; compact snapshot rendering is appropriate for personal lists. There is no backend, dependency injection framework, or separate view-model layer in this version.
 
+## Local diagnostics
+
+MainApplication initializes CrashDiagnostics before MAUI startup. Managed fatal
+hooks synchronously persist types/stacks and a bounded ring of screen/lifecycle
+names without suppressing termination. Android API 30+ exit history is imported
+off the UI thread on launch and report access; available native/ANR traces remain
+bounded attachments. Per-process build metadata distinguishes a failed older
+build from the importer. Handled navigation errors are labeled separately.
+
+DiagnosticReportStore owns atomic JSON records, pruning and diagnostic-only ZIP
+exports, independently of PlannerStore. Reports live in Android NoBackupFilesDir;
+exports use app cache and the user's share sheet. DiagnosticsPage also opens from
+the planner-load recovery screen. Clear serializes with import and records a cutoff
+so Android's retained history cannot repopulate deleted reports. No network backend
+or automatic upload is configured. [Diagnostics](../diagnostics.md) owns retention,
+capture limits, privacy and user/developer procedures.
+
 ## Android launcher widgets
 
 Three fixed-size AppWidgetProvider entries expose remaining tasks (1×1), completed/total (2×1), and create task (1×1). Android XML RemoteViews layouts use the app’s palette; widget_edit.xml mirrors edit.svg as a native vector for crisp scaling. TodayProgress counts PlannerQueries.ForDate, including checklist parents once and excluding list-only tasks.

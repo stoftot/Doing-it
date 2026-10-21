@@ -63,7 +63,7 @@ public sealed class MainPage : ContentPage
             _navigation.Content = null;
             var content = Ui.Stack(Ui.Text("Your tasks are safe", 26, bold: true),
                 Ui.Text("We couldn't open the saved planner. Nothing has been overwritten. Try again, or keep the app data for recovery.", 15),
-                Ui.Button("Try again", Load));
+                Ui.Button("Try again", Load), Ui.Quiet("Crash reports", OpenDiagnostics, "OpenDiagnostics"));
             content.Padding = 24;
             _scroll.Content = content;
         }
@@ -142,6 +142,7 @@ public sealed class MainPage : ContentPage
         shortcuts.Add(Ui.Icon("bell", "Notification settings", () => ModalNavigation.PushAsync(this, () => new NotificationSettingsPage()), true));
         shortcuts.Add(Ui.Icon("calendar", "Open calendar", OpenCalendar, true));
         content.Add(Ui.Between(Ui.Stack(Ui.Eyebrow(_today.ToString("dddd, d MMMM")), Ui.Text("Doing it.", 34, bold: true)), shortcuts));
+        content.Add(Ui.Quiet("Crash reports", OpenDiagnostics, "OpenDiagnostics"));
         var due = PlannerQueries.ForDate(_store.Data, _today);
         var remaining = due.Count(t => !t.IsCompleted);
         var hero = Ui.Stack(Ui.Eyebrow("ONE THING AT A TIME"), Ui.Text("A little progress,\nevery day.", 26, Ui.Teal, true),
@@ -381,6 +382,7 @@ public sealed class MainPage : ContentPage
     private Task OpenTask(TaskItem? item = null, string? listId = null, DateOnly? date = null) => ModalNavigation.PushAsync(this, () => new TaskEditorPage(_store, item, listId, date));
     private Task OpenRecurring(RecurringTask? item = null) => ModalNavigation.PushAsync(this, () => new RecurringEditorPage(_store, item));
     private Task OpenCalendar() => ModalNavigation.PushAsync(this, () => new CalendarPage(_store));
+    private Task OpenDiagnostics() => ModalNavigation.PushAsync(this, () => new DiagnosticsPage());
 
     private Task CreateList() => ModalNavigation.RunAsync(this, async () =>
     {
