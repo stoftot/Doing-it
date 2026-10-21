@@ -56,8 +56,8 @@ Confirm list tasks persist in their list until completed and remain recoverable.
 - Start with an empty General list on the dedicated test installation.
 
 ### Steps
-1. In General, tap `+ Add task`, enter `QA File receipt`, leave `In a list` selected with General, and tap Add task.
-2. Tap the task's edit icon, change its description to `QA File invoice`, and save changes.
+1. In General, tap `+ Add task`, enter `QA File receipt` as the task title, leave `In a list` selected with General, and tap Add task.
+2. Tap the task's edit icon, change its title to `QA File invoice`, and save changes.
 3. Check the task's completion box.
 4. Tap the `✓ 1 done` control for General, tap Undo beside the task, and close the Completed popup.
 5. Open Home and inspect the General card.
@@ -80,9 +80,9 @@ Confirm a scheduled task appears on its selected date, without entering a list.
 - The device's local date is correct. General has no `QA` tasks.
 
 ### Steps
-1. On Home, tap `+ Add a task for today`, enter `QA Today`, and tap Add task.
+1. On Home, tap `+ Add a task for today`, enter `QA Today` as the task title, and tap Add task.
 2. Open the calendar and select today. Then select tomorrow.
-3. On tomorrow, tap `+ Add task for this day`, enter `QA Tomorrow`, verify `On a date` and tomorrow are selected, and tap Add task.
+3. On tomorrow, tap `+ Add task for this day`, enter `QA Tomorrow` as the task title, verify `On a date` and tomorrow are selected, and tap Add task.
 4. Switch between today and tomorrow in the calendar, close it, and inspect Home and General.
 
 ### Expected result
@@ -121,9 +121,9 @@ Confirm each recurrence type appears only on its chosen dates, including nonexis
 - Open Recurring with no `QA` routines. Use the device's correct local date as the start date.
 
 ### Steps
-1. Create `QA Daily` with Daily selected.
-2. Create `QA Weekly` with Weekly selected; choose Monday and Wednesday and leave the other weekdays unselected.
-3. Create `QA Monthly` with Monthly selected; choose day 31 and months February and March only.
+1. Create a routine titled `QA Daily` with Daily selected.
+2. Create a routine titled `QA Weekly` with Weekly selected; choose Monday and Wednesday and leave the other weekdays unselected.
+3. Create a routine titled `QA Monthly` with Monthly selected; choose day 31 and months February and March only.
 4. Use the calendar to inspect the next Monday, Wednesday, and Thursday, plus the next February 28 or 29 and March 31 after today.
 5. Inspect today and tomorrow for `QA Daily`.
 
@@ -136,7 +136,7 @@ Confirm each recurrence type appears only on its chosen dates, including nonexis
 ### Cleanup
 - Delete the three `QA` routines through Edit routine.
 
-## PLANNER-007 — Required descriptions and schedule choices
+## PLANNER-007 — Required task titles and schedule choices
 
 ### Purpose
 Confirm invalid entries show readable errors and create no partial items.
@@ -147,9 +147,9 @@ Confirm invalid entries show readable errors and create no partial items.
 ### Steps
 1. In Lists, tap `+ New list`, enter only spaces, and tap Create. Dismiss the error.
 2. Create a list named `QA Unique`; then try to create `qa unique` and dismiss the error.
-3. Open `+ New task`, leave the description blank, and tap Add task. Dismiss the error and close the editor.
-4. On Recurring, open `+ Create recurring task`, leave the description blank, and tap Create routine. Dismiss the error.
-5. Enter `QA Invalid weekly`, choose Weekly, deselect every weekday, and try Create routine. Dismiss the error.
+3. Open `+ New task`, leave the title blank, and tap Add task. Dismiss the error and close the editor.
+4. On Recurring, open `+ Create recurring task`, leave the title blank, and tap Create routine. Dismiss the error.
+5. Enter `QA Invalid weekly` as the routine title, choose Weekly, deselect every weekday, and try Create routine. Dismiss the error.
 6. Choose Monthly, deselect every selected month, and try Create routine. Then select one month, deselect every selected day, and try again.
 
 ### Expected result
@@ -169,8 +169,8 @@ Confirm a routine's schedule can change and each date keeps its own completion s
 - Open Recurring with no `QA` routines. Keep the device date unchanged during the case.
 
 ### Steps
-1. Create `QA Stretch` as a Daily routine.
-2. Tap Edit routine, change the description to `QA Stretch gently`, and save changes.
+1. Create a routine titled `QA Stretch` with Daily selected.
+2. Tap Edit routine, change its title to `QA Stretch gently`, and save changes.
 3. In the calendar, complete its occurrence today; select tomorrow and complete that occurrence too.
 4. Return to today, show completed tasks with the `done` control, and undo only today's occurrence.
 5. Verify tomorrow remains completed. On Recurring, turn off the `Enable QA Stretch gently` switch, inspect today and tomorrow in the calendar, then turn it on again.
@@ -193,7 +193,7 @@ Verify a process restart reads existing planner data once and retains edits and 
 - Use a test installation without `QA Persist` items.
 
 ### Steps
-1. Create list `QA Persist`, add list task `QA Note`, create tomorrow's dated task `QA Appointment`, and create daily routine `QA Check in`.
+1. Create list `QA Persist`; add a list task titled `QA Note`, a dated task titled `QA Appointment` for tomorrow, and a daily routine titled `QA Check in`.
 2. Complete `QA Note` and today's occurrence of `QA Check in`.
 3. Fully stop the app process, then launch it again without clearing app data.
 4. Inspect Home, Lists, Recurring, and today and tomorrow in the calendar.
@@ -215,7 +215,7 @@ Check device interaction and layout with constrained space and larger system tex
 - Use a small-screen Android device or emulator and a test installation with one list task and one routine. Record the original system font size so it can be restored.
 
 ### Steps
-1. Open a task editor, focus the description, type a long sentence, dismiss the keyboard with Android Back, and inspect the Save button. Reopen the keyboard and scroll the editor.
+1. Open a task editor, focus the optional details field, type a long sentence, dismiss the keyboard with Android Back, and inspect the Save button. Reopen the keyboard and scroll the editor.
 2. Close the editor with its Close icon; open it again and use Android Back to dismiss it.
 3. Open General's Completed popup and use Android Back to close it. From Lists, use Android Back to return Home.
 4. Open the calendar, switch Month and Week, and use Android Back or Close to return.
@@ -238,13 +238,13 @@ Verify checklist creation and editing in list, dated, and recurring tasks, inclu
 - Use a test installation with no `QA Checklist` items and a correct device local date. Preserve unrelated existing data; use the unique `QA` names below.
 
 ### Steps
-1. In Lists, create a list named `QA Checklist`; add a checklist task named `QA Trip` with subtasks `Book ticket` and `Pack bag`. Open its checklist and complete only `Book ticket`.
-2. Confirm the partly complete task remains active and shows `1 of 2 done`. From its checklist, tap Edit to-do list, rename the task and first subtask, add `Check weather`, and remove `Pack bag`; close the editor without saving. Reopen the checklist and confirm the saved title, subtasks, and checked state are unchanged.
-3. Edit the to-do list again, save the title `QA Trip ready`, rename `Book ticket` to `Reserve ticket`, add `Check weather`, and remove `Pack bag`. Complete all remaining subtasks. Open the list's completed popup, open the checklist, and uncheck one subtask.
-4. Create a dated checklist `QA Appointment` for tomorrow with subtasks `Bring form` and `Bring ID`. Complete one subtask and inspect the calendar for today and tomorrow.
-5. Create a daily recurring checklist `QA Daily prep` starting today with subtasks `Review plan` and `Prepare bag`. Complete both subtasks for today. In the calendar, inspect tomorrow and complete only `Review plan` there.
-6. Open today's `QA Daily prep` checklist and tap Edit routine. Rename `Review plan`, add `Check weather`, remove `Prepare bag`, and save. Inspect today's occurrence and tomorrow's occurrence. Complete `Check weather` for today, then fully stop and relaunch the app without clearing its data.
-7. Reopen the calendar and inspect today's, tomorrow's, and the day-after-tomorrow's occurrences. Open a completed checklist from the completed popup and uncheck one subtask.
+1. In Lists, create a list named `QA Checklist`; add a checklist task with title `QA Trip`, optional details, and subtasks `Book ticket` and `Pack bag`. Open its interactive checklist with the list/progress control and complete only `Book ticket`.
+2. Confirm the partly complete task remains active and shows `1 of 2 done`. From its checklist, tap Edit to-do list, change the task title and first subtask title, add `Check weather`, and remove `Pack bag`; close the editor without saving. Reopen the checklist with the list/progress control and confirm the saved title, subtasks, and checked state are unchanged.
+3. Edit the to-do list again, save the task title `QA Trip ready`, rename `Book ticket` to `Reserve ticket`, add `Check weather`, and remove `Pack bag`. Complete all remaining subtasks. Open the list's completed popup, use the list/progress control to open the interactive checklist, and uncheck one subtask.
+4. Create a dated checklist with title `QA Appointment` and optional details for tomorrow, with subtasks `Bring form` and `Bring ID`. Complete one subtask and inspect the calendar for today and tomorrow.
+5. Create a daily recurring checklist with title `QA Daily prep` starting today, optional details, and subtasks `Review plan` and `Prepare bag`. Complete both subtasks for today. In the calendar, open the interactive checklist with its list/progress control, inspect tomorrow, and complete only `Review plan` there.
+6. Open today's `QA Daily prep` checklist with the list/progress control and tap Edit routine. Rename `Review plan`, add `Check weather`, remove `Prepare bag`, and save. Inspect today's occurrence and tomorrow's occurrence. Complete `Check weather` for today, then fully stop and relaunch the app without clearing its data.
+7. Reopen the calendar and inspect today's, tomorrow's, and the day-after-tomorrow's occurrences. Open a completed checklist from the completed popup with its list/progress control and uncheck one subtask.
 
 ### Expected result
 - The checklist view shows each subtask's checked state and an accurate completed/total counter. The Edit to-do list and Edit routine forms change titles and membership; closing without saving leaves those edits unapplied, and saving preserves progress for matching subtasks.
@@ -268,10 +268,10 @@ Confirm both widget sizes report the same completion counts as Home's dated task
 - Place one 1x1 `Tasks left today` widget and one 2x1 `Today’s progress` widget where both are visible.
 
 ### Steps
-1. Confirm the empty-day widget state. Create ten tasks dated today, each prefixed with the run's unique `QA Widget` marker. Also create one `QA Widget` task in General, one dated yesterday, and one dated tomorrow.
+1. Confirm the empty-day widget state. Create ten tasks dated today with titles prefixed by the run's unique `QA Widget` marker. Also create one `QA Widget` task in General, one dated yesterday, and one dated tomorrow.
 2. Complete six of today's ten dated tasks. Leave the other four incomplete, then inspect both widgets and Home's Today's tasks section.
 3. Complete the remaining four dated tasks and inspect all three places again.
-4. Create one active daily `QA Widget` routine starting today. Inspect the widgets, complete today's routine occurrence, and inspect again. Then undo one dated task and inspect once more.
+4. Create one active daily routine titled `QA Widget` starting today. Inspect the widgets, complete today's routine occurrence, and inspect again. Then undo one dated task and inspect once more.
 5. Remove only this run's dated, list, and recurring items. Confirm the empty-day state after cleanup.
 
 ### Expected result
@@ -295,9 +295,9 @@ Verify every instance of the widgets refreshes after task changes and eventually
 - Use a test installation with no `QA Widget refresh` items; note the device's original date, time zone, and font size.
 
 ### Steps
-1. Create a dated `QA Widget refresh` task for today, then add a second one from another app tab or modal editor.
+1. Create a dated task titled `QA Widget refresh` for today, then add a second task with a distinct title from another app tab or modal editor.
 2. Complete the first task, undo it, edit the second task, and delete it. Observe every widget instance after each change.
-3. Create a dated task for tomorrow. Advance the device date past local midnight using the approved test-device procedure, then return to the launcher and app.
+3. Create a dated task titled `QA Widget tomorrow` for tomorrow. Advance the device date past local midnight using the approved test-device procedure, then return to the launcher and app.
 4. Restart the device, reopen the launcher, and allow normal app/widget refresh time. If the test environment supports it, repeat with a different local time zone and restore the original setting afterward.
 
 ### Expected result
@@ -358,3 +358,31 @@ Check Android launcher placement and accessibility readability for both fixed wi
 
 ### Cleanup
 - Restore the original font size and remove the temporary launcher widgets and test tasks.
+
+## PLANNER-016 — Task titles, optional details, and read-only task details
+
+### Purpose
+Verify that task titles remain short and readable while unlimited optional details stay attached to their task, and that opening task details never changes planner state.
+
+### Preconditions
+- Use a test installation with room to create unique `QA Text` tasks in General, on a calendar date, and as a recurring task. Include one checklist with at least two subtasks.
+- Prepare a Description longer than 250 characters with several paragraphs. Keep the device font size and display size unchanged during the case.
+
+### Steps
+1. From Home, create a dated task with a short one-line title and long multiline text in the Description field. Save it, reopen Edit task, and confirm both fields retain their contents. Clear Description and save; reopen once more.
+2. Try saving a task with a blank title. Dismiss the validation message, enter a title with three explicit lines, and try saving again. Then enter a long unbroken word and a multiword title that each wrap to more than two rendered lines at this device width; try saving each. Finally enter a valid title that renders on two lines or fewer and save.
+3. Repeat the long Description save and edit on a General list task and on a recurring task. Create a checklist in General with long optional Description text and two subtasks.
+4. Open the dated task's details from Home, then from its date in Calendar. Open the list task's details from Lists. Open the recurring task's details from the Recurring tab, including while it is paused or has no current occurrence, and from a scheduled occurrence. Also open a task from the completed-task popup.
+5. In each details popup, tap inside the content and verify it stays open. Scroll the long details from top to bottom, then close with the close control, tap outside, and use Android Back in separate openings.
+6. For the checklist, tap its title and then close the details popup. Tap the list/progress control to open its interactive checklist and inspect the subtasks; return without changing them.
+7. Reopen each task and routine editor and compare the saved title, details, completion, and checklist progress with the values from before the read-only inspections.
+
+### Expected result
+- A title is required, has at most two explicit lines, and renders on at most two lines at the current device width. Blank titles, titles with three explicit lines, long unbroken words, and multiword titles that wrap beyond two rendered lines show a readable validation message, keep the editor open, and retain typed text for correction.
+- Description text longer than 250 characters, including line breaks and paragraph spacing, saves and reopens exactly as entered for normal, checklist, and recurring tasks. Clearing Description saves successfully and displays no Description content.
+- Details are available from Home, Lists, Calendar, completed tasks, the Recurring tab, and scheduled recurring occurrences. Recurring details show the routine's schedule in every entry point. They do not show a date or list destination.
+- Tapping inside the details content does not dismiss it. Long details scroll fully, remain within the visible app area, and leave a visible margin around the popup. Close, outside tap, and Android Back each dismiss it.
+- Tapping a checklist task title opens its details. Its list icon/progress control opens the interactive checklist. Opening and closing details changes no title, optional details, completion, subtask state, or recurring schedule.
+
+### Cleanup
+- Delete only the `QA Text` tasks and routine created in this run, then remove the checklist and its subtasks through the task editor.

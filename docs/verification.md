@@ -19,9 +19,9 @@ For documentation/integration-guidance maintenance, use static inspection:
 - Compare documented TFM/package/build paths, native APK ABIs, test locations and
   locators to the actual project, existing output and source. An old APK's contents
   establish its shape, not that current source has been built or tested.
-- Inspect any existing project JSON and referenced suites statically. Currently
-  there is no `android-testing.json` or project UI suite; do not create placeholder
-  configuration that silently runs the shared Settings smoke.
+- Inspect existing project suites and any project JSON statically. The task-details
+  suite runs without `android-testing.json`; do not create placeholder configuration
+  that silently runs the shared Settings smoke.
 
 Do not run template installers, builds, `Test-AndroidEnvironment.ps1`, ADB discovery,
 runtime listing helpers, Appium or an emulator merely to validate these documents.
@@ -35,14 +35,15 @@ version or update its release records.
 
 For actual app changes/tests, follow [Android integration](android-testing.md) and
 [module facts](ai/modules/MAUI_ANDROID.md). Existing automated coverage is the core
-xUnit project; existing device cases are [PLANNER-001 through PLANNER-010](../tests/manual/planner.md).
-There is no executable Doing it Appium harness. The following work is still needed
-before claiming reserved-runner integration works or advancing the root marker:
+xUnit project and the `tests/android/TaskDetails.ps1` Managed Appium suite for task
+text and details popups. The [planner manual cases](../tests/manual/planner.md)
+cover the wider app, checklists and widgets. The broader acceptance below remains
+necessary before advancing the root review marker:
 
-1. Implement a project-owned Managed suite against actual Appium page source and
-   existing automation hooks, with unique fixtures and baseline-aware assertions.
-   Prefer 003/004/009 for complete/Undo, date/list separation and persistence; extend
-   to the other relevant cases. If choosing External instead, implement its explicit
+1. Use the task-details suite against actual Appium page source and existing
+   automation hooks, with unique fixtures and baseline-aware assertions. Extend
+   coverage for 003/004/009 complete/Undo, date/list separation and persistence,
+   and the other relevant cases. If choosing External instead, implement its explicit
    context/capability/teardown contract; core xUnit tests do not supply it.
 2. In authorized runtime work, discover compatible existing devices, resources and
    reservations. Build once using `./tooling/build-android.ps1`; stop on failure and

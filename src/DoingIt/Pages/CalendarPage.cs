@@ -6,6 +6,8 @@ public sealed class CalendarPage : ContentPage
 {
     private readonly PlannerStore _store;
     private readonly VerticalStackLayout _body = new() { Spacing = 20, Padding = new Thickness(22, 4, 22, 28) };
+    private readonly Grid _root = new() { RowDefinitions = [new(GridLength.Auto), new(GridLength.Star)] };
+    private TaskDetailsOverlay? _details;
     private DateOnly _selected = DateOnly.FromDateTime(DateTime.Today);
     private bool _month = true;
     private bool _showCompleted;
@@ -15,12 +17,11 @@ public sealed class CalendarPage : ContentPage
     {
         _store = store;
         Ui.ConfigurePage(this);
-        var root = new Grid { RowDefinitions = [new(GridLength.Auto), new(GridLength.Star)] };
         var header = Ui.ModalHeader("A little look ahead", async () => await Navigation.PopModalAsync());
         header.Margin = new Thickness(22, 12, 16, 12);
-        root.Add(header);
-        root.Add(new ScrollView { Content = _body }, 0, 1);
-        Content = root;
+        _root.Add(header);
+        _root.Add(new ScrollView { Content = _body }, 0, 1);
+        Content = _root;
     }
 
     protected override void OnAppearing() { base.OnAppearing(); Render(); }
@@ -92,7 +93,7 @@ public sealed class CalendarPage : ContentPage
         {
             if (task.IsChecklist)
             {
-                tasks.Add(MainPage.ChecklistRow(task, () => Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, task.IsRecurring, _selected))));
+                tasks.Add(MainPage.ChecklistRow(task, () => Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, task.IsRecurring, _selected)), () => ShowDetails(task)));
                 continue;
             }
             var check = new CheckBox { Color = Ui.Teal, IsChecked = task.IsCompleted, WidthRequest = 44, HeightRequest = 48 };
@@ -100,7 +101,7 @@ public sealed class CalendarPage : ContentPage
             check.CheckedChanged += async (_, args) => await Toggle(task, args.Value);
             var row = new Grid { ColumnDefinitions = [new(GridLength.Auto), new(GridLength.Star), new(GridLength.Auto)], ColumnSpacing = 4 };
             row.Add(check);
-            var text = Ui.Stack(Ui.Text(task.Title, 14, task.IsCompleted ? Ui.Muted : Ui.Ink));
+            var text = Ui.Stack(Ui.TaskTitle(task.Title, () => ShowDetails(task), task.IsCompleted ? Ui.Muted : Ui.Ink));
             text.VerticalOptions = LayoutOptions.Center;
             text.Spacing = 2;
             if (task.IsRecurring) text.Add(Ui.Text("Recurring", 10, Ui.Muted));
@@ -120,6 +121,31 @@ public sealed class CalendarPage : ContentPage
         _selected = _month ? _selected.AddMonths(direction) : _selected.AddDays(direction * 7);
         Render();
         return Task.CompletedTask;
+    }
+
+    private Task ShowDetails(DueTask task)
+    {
+        if (_details is not null) return Task.CompletedTask;
+        foreach (var child in _root.Children.OfType<View>()) child.IsEnabled = false;
+        _details = new TaskDetailsOverlay(_store.Data, task.Id, task.IsRecurring, CloseDetails);
+        _root.Add(_details);
+        Grid.SetRowSpan(_details, 2);
+        return Task.CompletedTask;
+    }
+
+    private void CloseDetails()
+    {
+        if (_details is null) return;
+        _root.Remove(_details);
+        _details = null;
+        foreach (var child in _root.Children.OfType<View>()) child.IsEnabled = true;
+    }
+
+    protected override bool OnBackButtonPressed()
+    {
+        if (_details is null) return base.OnBackButtonPressed();
+        CloseDetails();
+        return true;
     }
 
     private async Task Toggle(DueTask task, bool completed)

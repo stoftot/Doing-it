@@ -10,12 +10,15 @@
 | `src/DoingIt/Pages/RecurringEditorPage.cs` | Daily, weekly and monthly schedule form |
 | `src/DoingIt/Pages/CalendarPage.cs` | Shared month/week calendar and dated task actions |
 | `src/DoingIt/Pages/EditorPage.cs` | Shared save/error/modal form handling |
+| `src/DoingIt/Pages/TaskDetailsOverlay.cs` | Read-only task information card and dismissible backdrop |
 | `src/DoingIt/Pages/ChecklistPage.cs`, `SubtaskEditor.cs` | Checklist popup, per-date checking and draft subtask forms |
 | `src/DoingIt/Ui.cs`, `Resources/` | Palette, native UI building blocks, fonts and vector icons |
 | `src/DoingIt/Platforms/Android/` | Android activity, manifest and theme |
+| `src/DoingIt/Platforms/Android/TaskTitleLayout.cs` | Native two-line title measurement for saves and migration |
 | `src/DoingIt/Platforms/Android/Widgets/`, `Platforms/Android/Resources/` | Launcher widget providers, persisted counts, refresh scheduling and native layouts |
 | `src/DoingIt.Core/` | Domain records, date queries, validation and atomic JSON storage |
 | `tests/DoingIt.Core.Tests/` | xUnit domain and file-storage regression tests |
+| `tests/android/TaskDetails.ps1` | Managed Appium regression suite for task text and read-only popups |
 | `tests/manual/planner.md` | Reusable Android interaction cases |
 | `tooling/build-android.ps1` | Native Android build with Windows Unicode-path workaround |
 | `docs/android-testing.md` | Shared AndroidTesting discovery, device/session ownership and project UI integration contract |

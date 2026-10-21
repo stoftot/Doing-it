@@ -9,6 +9,8 @@
 ## Data invariants
 
 - The General list (`general`) always exists and cannot be renamed or removed.
+- Tasks and routines require a title and may have an unlimited-length description. Descriptions keep their paragraph formatting and appear only in editors and read-only details. Whitespace-only descriptions become absent.
+- Core validation limits titles to two explicit lines. The Android store supplies `TaskTitleLayout.Fits` for save validation and legacy migration: it measures Open Sans at the task-row font size, system text scale and the narrowest portrait row width. Rows cap display at two lines if device settings later change; loading version 3 never rejects data merely because its typography no longer fits.
 - A TaskItem has exactly one of ListId or ScheduledDate; ListId must reference an existing list.
 - Custom-list removal moves tasks to General.
 - Weekly recurrence requires at least one weekday. Monthly recurrence requires at least one day (1-31) and month (1-12).
@@ -22,13 +24,15 @@
 
 One `planner.json` in FileSystem.AppDataDirectory contains versioned records. System.Text.Json source-generated metadata supports Android trimming. A semaphore serializes mutations; a new snapshot becomes visible only after a successful save. Saves write a same-directory temporary file then replace the destination, retaining the previous save as `.bak`.
 
-Schema version 2 adds checklist definitions and occurrence subtask progress. Version 1 is upgraded in memory on load and written as version 2 on the next successful mutation, leaving the original file untouched during load. Older app builds cannot read version 2 files.
+Schema version 2 added checklist definitions and occurrence subtask progress. Schema version 3 separates titles from optional descriptions. Versions 1 and 2 are upgraded in memory on load and written as version 3 on the next successful mutation, leaving the original file untouched during load. Legacy `Title` held the old description: text that fits two rendered lines becomes title-only; longer text stays intact in Description with the longest fitting whole-word prefix as Title. If the first word alone is oversized, the title uses its longest fitting Unicode text-element prefix. Older app builds cannot read version 3 files.
 
 Existing invalid data causes a visible load failure and is left intact. The UI offers retry without clearing data. Write errors preserve the in-memory snapshot and display an error. No automatic reset or silent backup recovery is performed.
 
 ## Presentation flow
 
 MainPage owns three tab bodies and the completed-task overlay. Task/recurrence editors save through PlannerStore then dismiss; the parent refreshes on appearing. CalendarPage queries selected local dates in month/week views. A timer and window resume hook refresh Home at a local date change.
+
+MainPage and CalendarPage host TaskDetailsOverlay above their existing content, keeping the app visible behind a dimmed backdrop. Task titles open this read-only card, including completed tasks and routine definitions; it shows title, optional description, and either date/list or the routine schedule. The card bounds its scrollable content to the available height. Backdrop, close button and Android Back dismiss it without mutating state. Checklist icons/progress retain the separate interactive checklist action.
 
 ChecklistPage is a modal card for immediate subtask checking, including completed occurrences. It stays open when the final item is checked. Nested task/routine editors use the shared SubtaskEditor for draft title/item changes; closing without saving discards the draft.
 

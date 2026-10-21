@@ -63,7 +63,10 @@ public sealed class ChecklistPage : ContentPage
         }
         var progress = Ui.Text($"{done} of {subtasks.Length} done", 15, Ui.Teal, true);
         progress.AutomationId = "ChecklistProgress";
-        var header = Ui.Stack(Ui.ModalHeader(title, Close), progress);
+        var heading = Ui.Text(title, TaskTitleLayout.FontSize);
+        heading.MaxLines = 2;
+        heading.LineBreakMode = LineBreakMode.TailTruncation;
+        var header = Ui.Stack(Ui.Between(heading, Ui.Icon("close", "Close", Close)), progress);
         if (_recurring) header.Add(Ui.Text(_date.HasValue ? _date.Value.ToString("dddd, d MMM yyyy") : "Routine template · Each occurrence starts fresh", 12, Ui.Muted));
         if (!canCheck) header.Add(Ui.Text("Edit the routine to change its items. Check items on a scheduled date in Home or the calendar.", 12, Ui.Muted));
         var body = new Grid

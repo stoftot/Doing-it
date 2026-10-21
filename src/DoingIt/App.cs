@@ -17,7 +17,7 @@ public sealed class App : Application
     protected override Window CreateWindow(IActivationState? activationState)
     {
         UserAppTheme = AppTheme.Light;
-        var store = new PlannerStore(Path.Combine(FileSystem.AppDataDirectory, "planner.json"));
+        var store = new PlannerStore(Path.Combine(FileSystem.AppDataDirectory, "planner.json"), TaskTitleLayout.Fits);
         store.Changed += (_, _) => AndroidWidgets.PlannerWidgets.Refresh();
         var page = new MainPage(store);
         _mainPage = page;

@@ -49,8 +49,9 @@ to our layout evidence. Shared revisions are independent of app releases.
 
 ## Existing targets and project configuration
 
-There is currently no project `android-testing.json`, registered Doing it project
-GUID/device, or UI automation suite. Use the existing `MAUI_Shared_Android` fallback
+There is currently no project `android-testing.json` or registered Doing it project
+GUID/device. `tests/android/TaskDetails.ps1` is a project-owned Managed suite for
+task titles, descriptions and read-only details popups. Use the existing `MAUI_Shared_Android` fallback
 for authorized emulator work. Do not use the separate AndroidTestingValidation
 device or claim its project GUID. Current live serials, reservations and physical
 phone availability are unknown until runtime discovery; do not save a serial.
@@ -95,16 +96,15 @@ single RID); a typical physical ARM64 phone needs `arm64-v8a` (`android-arm64`).
 Use the existing embedded-assembly APK settings; stop on build failure and never
 deploy an older artifact as the new build.
 
-The following is a future Managed-suite invocation, **blocked until the project
-suite is implemented**. `tests/android/PlannerSmoke.ps1` is a proposed path, not an
-existing test. The guard prevents falling through to a misleading Settings run.
-Resolve `$androidTestingRoot` as above first.
+Use the task-details Managed suite explicitly; it creates run-unique fixtures and
+removes only its own data through the app. The guard prevents falling through to
+a misleading Settings run. Resolve `$androidTestingRoot` as above first.
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-$plannerSuite = Join-Path (Get-Location).Path 'tests/android/PlannerSmoke.ps1'
+$plannerSuite = Join-Path (Get-Location).Path 'tests/android/TaskDetails.ps1'
 if (-not (Test-Path -LiteralPath $plannerSuite -PathType Leaf)) {
-    throw 'Implement and review the Doing it Managed UI suite before running Android tests.'
+    throw 'The Doing it task-details Managed suite is missing.'
 }
 & ./tooling/build-android.ps1
 if ($LASTEXITCODE -ne 0) { throw 'Build failed; do not deploy an older APK.' }

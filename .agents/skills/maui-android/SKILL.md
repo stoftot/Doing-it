@@ -25,8 +25,8 @@ Use the .NET adapter for existing shared-logic/unit/integration tests. Support
 build or shared-logic results do not prove navigation or device UI behavior.
 When stable device automation is impractical, `create-tests` maintains reusable
 manual cases. Execute cases selected by `validate-change` through the reserved
-runner on shared emulators, or the separate physical-device route. Doing it has
-core xUnit tests and manual cases but no Appium suite yet; do not substitute the
+runner on shared emulators, or the separate physical-device route. Use the project
+suites listed in the Android facts; do not substitute the
 shared Settings/counter suites or claim a UI migration passed. Optional DevFlow
 requires intentional instrumentation and does not bypass emulator reservations.
 Coverage design stays in the core testing skills.

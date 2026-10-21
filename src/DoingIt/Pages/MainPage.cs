@@ -10,6 +10,7 @@ public sealed class MainPage : ContentPage
     private readonly ContentView _navigation = new();
     private readonly IDispatcherTimer _dayTimer;
     private Grid? _popup;
+    private TaskDetailsOverlay? _details;
     private int _tab;
     private bool _loaded;
     private bool _loading;
@@ -168,15 +169,13 @@ public sealed class MainPage : ContentPage
             var enabled = new Switch { IsToggled = task.IsEnabled, OnColor = Ui.Teal, ThumbColor = task.IsEnabled ? Ui.Teal : Ui.Muted };
             SemanticProperties.SetDescription(enabled, $"Enable {task.Title}");
             enabled.Toggled += async (_, args) => await Change(() => _store.SetRecurringEnabledAsync(task.Id, args.Value));
-            var details = Ui.Stack(Ui.Text(task.Title, 17, bold: true), Ui.Text(PlannerQueries.ScheduleLabel(task), 12, Ui.Muted));
+            var details = Ui.Stack(Ui.TaskTitle(task.Title, () => ShowDetails(task.Id, true)), Ui.Text(PlannerQueries.ScheduleLabel(task), 12, Ui.Muted));
             details.Spacing = 5;
             if (task.IsChecklist)
             {
                 var occurrence = PlannerQueries.ForDate(_store.Data, _today).FirstOrDefault(item => item.IsRecurring && item.Id == task.Id);
-                details.Add(Ui.Text(occurrence is null ? $"To-do list · {task.Subtasks.Length} subtasks" : occurrence.ProgressLabel + " today", 12, Ui.Teal));
-                var tap = new TapGestureRecognizer();
-                tap.Tapped += async (_, _) => await Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, true, occurrence is null ? null : _today));
-                details.GestureRecognizers.Add(tap);
+                details.Add(Ui.Quiet(occurrence is null ? $"To-do list · {task.Subtasks.Length} subtasks" : occurrence.ProgressLabel + " today",
+                    () => Navigation.PushModalAsync(new ChecklistPage(_store, task.Id, true, occurrence is null ? null : _today))));
             }
             var card = Ui.Stack(Ui.Between(details, enabled), Ui.Rule(),
                 Ui.Between(Ui.Text(task.IsEnabled ? "●  Active" : "○  Paused", 12, task.IsEnabled ? Ui.Teal : Ui.Muted),
@@ -229,7 +228,7 @@ public sealed class MainPage : ContentPage
 
     private View TaskRow(DueTask task, DateOnly? date = null)
     {
-        if (task.IsChecklist) return ChecklistRow(task, () => OpenChecklist(task, date));
+        if (task.IsChecklist) return ChecklistRow(task, () => OpenChecklist(task, date), () => ShowDetails(task.Id, task.IsRecurring));
         var check = new CheckBox { Color = Ui.Teal, IsChecked = false, WidthRequest = 44, HeightRequest = 48 };
         SemanticProperties.SetDescription(check, $"Complete {task.Title}");
         check.CheckedChanged += async (_, args) =>
@@ -238,7 +237,7 @@ public sealed class MainPage : ContentPage
         };
         var grid = new Grid { ColumnDefinitions = [new(GridLength.Auto), new(GridLength.Star), new(GridLength.Auto)], ColumnSpacing = 3 };
         grid.Add(check);
-        var text = Ui.Stack(Ui.Text(task.Title, 15));
+        var text = Ui.Stack(Ui.TaskTitle(task.Title, () => ShowDetails(task.Id, task.IsRecurring)));
         text.VerticalOptions = LayoutOptions.Center;
         text.Spacing = 2;
         if (task.IsRecurring) text.Add(Ui.Text("Recurring", 10, Ui.Muted));
@@ -247,18 +246,37 @@ public sealed class MainPage : ContentPage
         return grid;
     }
 
-    internal static View ChecklistRow(DueTask task, Func<Task> open)
+    internal static View ChecklistRow(DueTask task, Func<Task> open, Func<Task> details)
     {
-        var text = Ui.Stack(Ui.Text(task.Title, 15), Ui.Text(task.ProgressLabel, 12, Ui.Teal, true));
+        var text = Ui.Stack(Ui.TaskTitle(task.Title, details), Ui.Quiet(task.ProgressLabel, open));
         text.Spacing = 3;
         if (task.IsRecurring) text.Add(Ui.Text("Recurring", 10, Ui.Muted));
         var row = new Grid { ColumnDefinitions = [new(GridLength.Auto), new(GridLength.Star)], ColumnSpacing = 8, Padding = new Thickness(0, 8) };
         row.Add(Ui.Icon("list", "Open " + task.Title, open));
         row.Add(text, 1);
-        var tap = new TapGestureRecognizer();
-        tap.Tapped += async (_, _) => await open();
-        text.GestureRecognizers.Add(tap);
         return row;
+    }
+
+    private Task ShowDetails(string id, bool recurring)
+    {
+        if (_details is not null) return Task.CompletedTask;
+        _scroll.IsEnabled = false;
+        _navigation.IsEnabled = false;
+        if (_popup is not null) _popup.IsEnabled = false;
+        _details = new TaskDetailsOverlay(_store.Data, id, recurring, CloseDetails);
+        _root.Add(_details);
+        Grid.SetRowSpan(_details, 2);
+        return Task.CompletedTask;
+    }
+
+    private void CloseDetails()
+    {
+        if (_details is null) return;
+        _root.Remove(_details);
+        _details = null;
+        _scroll.IsEnabled = _popup is null;
+        _navigation.IsEnabled = _popup is null;
+        if (_popup is not null) _popup.IsEnabled = true;
     }
 
     private Task OpenChecklist(DueTask task, DateOnly? date)
@@ -293,7 +311,7 @@ public sealed class MainPage : ContentPage
         var rows = Ui.Stack();
         var completed = items().Where(t => t.IsCompleted).ToArray();
         foreach (var task in completed)
-            rows.Add(task.IsChecklist ? ChecklistRow(task, () => OpenChecklist(task, date)) : Ui.Between(Ui.Text(task.Title, 14, Ui.Muted), Ui.Quiet("Undo", async () =>
+            rows.Add(task.IsChecklist ? ChecklistRow(task, () => OpenChecklist(task, date), () => ShowDetails(task.Id, task.IsRecurring)) : Ui.Between(Ui.TaskTitle(task.Title, () => ShowDetails(task.Id, task.IsRecurring), Ui.Muted), Ui.Quiet("Undo", async () =>
             {
                 await Change(() => Complete(task, date, false));
                 ShowCompleted(name, items, date);
@@ -313,6 +331,7 @@ public sealed class MainPage : ContentPage
 
     private void ClosePopup()
     {
+        CloseDetails();
         if (_popup is null) return;
         _root.Remove(_popup);
         _popup = null;
@@ -370,6 +389,7 @@ public sealed class MainPage : ContentPage
 
     protected override bool OnBackButtonPressed()
     {
+        if (_details is not null) { CloseDetails(); return true; }
         if (_popup is not null) { ClosePopup(); return true; }
         if (_tab != 0) { _tab = 0; Render(); return true; }
         return base.OnBackButtonPressed();

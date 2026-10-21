@@ -90,7 +90,7 @@ internal static class PlannerWidgets
                 try
                 {
                     // Read-only store: the activity remains the only writer.
-                    var store = new PlannerStore(Path.Combine(FileSystem.AppDataDirectory, "planner.json"));
+                    var store = new PlannerStore(Path.Combine(FileSystem.AppDataDirectory, "planner.json"), TaskTitleLayout.Fits);
                     await store.LoadAsync();
                     progress = TodayProgress.ForDate(store.Data, DateOnly.FromDateTime(DateTime.Today));
                 }

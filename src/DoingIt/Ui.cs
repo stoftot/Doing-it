@@ -141,7 +141,7 @@ internal static class Ui
     public static Editor Description(string text = "") => new()
     {
         Text = text,
-        Placeholder = "What would you like to do?",
+        Placeholder = "Add details (optional)",
         PlaceholderColor = Muted,
         TextColor = Ink,
         BackgroundColor = Colors.Transparent,
@@ -149,9 +149,49 @@ internal static class Ui
         FontSize = 17,
         AutoSize = EditorAutoSizeOption.TextChanges,
         MinimumHeightRequest = 106,
-        MaxLength = 250,
         AutomationId = "TaskDescription"
     };
+
+    public static Editor TitleEditor(string text = "") => new()
+    {
+        Text = text,
+        Placeholder = "What would you like to do?",
+        PlaceholderColor = Muted,
+        TextColor = Ink,
+        BackgroundColor = Colors.Transparent,
+        FontFamily = "OpenSansRegular",
+        FontSize = TaskTitleLayout.FontSize,
+        AutoSize = EditorAutoSizeOption.TextChanges,
+        MinimumHeightRequest = 64,
+        AutomationId = "TaskTitle"
+    };
+
+    public static View TitleField(Editor editor)
+    {
+        var hint = Text("Required · Up to two lines in a task row", 12, Muted);
+        void RefreshHint()
+        {
+            var fits = TaskTitleLayout.Fits(editor.Text?.Trim() ?? "");
+            hint.Text = fits ? "Required · Up to two lines in a task row" : "Title is too long. Move extra details to the description.";
+            hint.TextColor = fits ? Muted : Danger;
+        }
+        editor.TextChanged += (_, _) => RefreshHint();
+        RefreshHint();
+        return Stack(Eyebrow("TASK TITLE"), Card(editor), hint);
+    }
+
+    public static Label TaskTitle(string title, Func<Task> open, Color? color = null)
+    {
+        var label = Text(title, TaskTitleLayout.FontSize, color);
+        label.MaxLines = 2;
+        label.LineBreakMode = LineBreakMode.TailTruncation;
+        label.MinimumHeightRequest = 44;
+        var tap = new TapGestureRecognizer();
+        tap.Tapped += async (_, _) => await open();
+        label.GestureRecognizers.Add(tap);
+        SemanticProperties.SetHint(label, "Open task details");
+        return label;
+    }
 
     public static async Task Error(Page page, Exception exception)
     {

@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace DoingIt.Core;
 
-public sealed class PlannerStore(string filePath)
+public sealed class PlannerStore(string filePath, Func<string, bool>? titleFits = null)
 {
     public const string GeneralListId = "general";
 
@@ -46,6 +46,25 @@ public sealed class PlannerStore(string filePath)
                         Tasks = loaded.Tasks?.Select(task => task is null ? task! : task with { IsChecklist = false, Subtasks = [] }).ToArray()!,
                         RecurringTasks = loaded.RecurringTasks?.Select(task => task is null ? task! : task with { IsChecklist = false, Subtasks = [] }).ToArray()!,
                         Completions = loaded.Completions?.Select(completion => completion is null ? completion! : completion with { CompletedSubtaskIds = [] }).ToArray()!
+                    };
+                }
+                if (loaded.SchemaVersion == 2)
+                {
+                    loaded = loaded with
+                    {
+                        SchemaVersion = 3,
+                        Tasks = loaded.Tasks?.Select(task =>
+                        {
+                            if (task is null) return task!;
+                            var text = TaskText.FromLegacy(task.Title, titleFits ?? TaskText.FitsLines);
+                            return task with { Title = text.Title, Description = text.Description };
+                        }).ToArray()!,
+                        RecurringTasks = loaded.RecurringTasks?.Select(task =>
+                        {
+                            if (task is null) return task!;
+                            var text = TaskText.FromLegacy(task.Title, titleFits ?? TaskText.FitsLines);
+                            return task with { Title = text.Title, Description = text.Description };
+                        }).ToArray()!
                     };
                 }
                 ValidateData(loaded);
@@ -105,7 +124,8 @@ public sealed class PlannerStore(string filePath)
         {
             var cleaned = task with
             {
-                Title = CleanText(task.Title, 250, "Task title"),
+                Title = CleanTitle(task.Title),
+                Description = TaskText.CleanDescription(task.Description),
                 ListId = task.ListId?.Trim(),
                 Subtasks = CleanSubtasks(task.Subtasks)
             };
@@ -152,7 +172,12 @@ public sealed class PlannerStore(string filePath)
         ArgumentNullException.ThrowIfNull(task);
         return ChangeAsync(data =>
         {
-            var cleaned = task with { Title = CleanText(task.Title, 250, "Recurring task title"), Subtasks = CleanSubtasks(task.Subtasks) };
+            var cleaned = task with
+            {
+                Title = CleanTitle(task.Title),
+                Description = TaskText.CleanDescription(task.Description),
+                Subtasks = CleanSubtasks(task.Subtasks)
+            };
             ValidateRecurring(cleaned);
             var index = Array.FindIndex(data.RecurringTasks, existing => existing.Id == cleaned.Id);
             if (index >= 0 && data.RecurringTasks[index].IsChecklist != cleaned.IsChecklist)
@@ -249,6 +274,14 @@ public sealed class PlannerStore(string filePath)
         return cleaned;
     }
 
+    private string CleanTitle(string? value)
+    {
+        var title = TaskText.CleanTitle(value);
+        if (titleFits is not null && !titleFits(title))
+            throw new ArgumentException("Task title must fit on two lines. Put additional details in the description.");
+        return title;
+    }
+
     private static void EnsureUniqueListName(PlannerData data, string name, string? exceptId = null)
     {
         if (data.Lists.Any(list => list.Id != exceptId && string.Equals(list.Name, name, StringComparison.OrdinalIgnoreCase)))
@@ -265,7 +298,7 @@ public sealed class PlannerStore(string filePath)
     private static void ValidateTask(TaskItem task, TaskList[] lists)
     {
         RequireId(task.Id, "Task");
-        CleanText(task.Title, 250, "Task title");
+        TaskText.CleanTitle(task.Title);
         ValidateSubtasks(task.IsChecklist, task.Subtasks);
         if ((task.ListId is not null) == task.ScheduledDate.HasValue)
             throw new ArgumentException("A task must belong to either a list or a scheduled date.");
@@ -276,7 +309,7 @@ public sealed class PlannerStore(string filePath)
     private static void ValidateRecurring(RecurringTask task)
     {
         RequireId(task.Id, "Recurring task");
-        CleanText(task.Title, 250, "Recurring task title");
+        TaskText.CleanTitle(task.Title);
         ValidateSubtasks(task.IsChecklist, task.Subtasks);
         if (task.Subtasks.Any(subtask => subtask.IsCompleted))
             throw new ArgumentException("Recurring subtask completion belongs to a date, not the routine.");
@@ -323,7 +356,7 @@ public sealed class PlannerStore(string filePath)
 
     private static void ValidateData(PlannerData data)
     {
-        if (data.SchemaVersion != 2) throw new InvalidDataException($"Unsupported planner data version {data.SchemaVersion}.");
+        if (data.SchemaVersion != 3) throw new InvalidDataException($"Unsupported planner data version {data.SchemaVersion}.");
         if (data.Lists is null || data.Tasks is null || data.RecurringTasks is null || data.Completions is null)
             throw new InvalidDataException("Planner data has missing collections.");
         if (data.Lists.Any(list => list is null) || data.Tasks.Any(task => task is null) ||

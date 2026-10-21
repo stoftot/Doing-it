@@ -321,13 +321,16 @@ public sealed class ChecklistTests
 
         var store = new PlannerStore(fixture.Path);
         await store.LoadAsync();
+        Assert.Equal(versionOne, await File.ReadAllTextAsync(fixture.Path));
+        Assert.False(File.Exists(fixture.Path + ".bak"));
         Assert.True(store.Data.Tasks.Single(task => task.Id == "old-task").IsCompleted);
         Assert.Equal("Old dated task", PlannerQueries.ForDate(store.Data, Today).Single(task => !task.IsRecurring).Title);
         Assert.True(PlannerQueries.ForDate(store.Data, Today).Single(task => task.IsRecurring).IsCompleted);
         await store.AddListAsync("After migration");
 
         using var document = System.Text.Json.JsonDocument.Parse(await File.ReadAllTextAsync(fixture.Path));
-        Assert.Equal(2, document.RootElement.GetProperty("SchemaVersion").GetInt32());
+        Assert.Equal(3, document.RootElement.GetProperty("SchemaVersion").GetInt32());
+        Assert.Equal(versionOne, await File.ReadAllTextAsync(fixture.Path + ".bak"));
         var reopened = new PlannerStore(fixture.Path);
         await reopened.LoadAsync();
         Assert.True(reopened.Data.Tasks.Single(task => task.Id == "old-task").IsCompleted);

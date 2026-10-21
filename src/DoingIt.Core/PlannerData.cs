@@ -13,6 +13,7 @@ public record TaskItem
     private readonly bool _isCompleted;
     public string Id { get; init; } = Guid.NewGuid().ToString("N");
     public string Title { get; init; } = "";
+    public string? Description { get; init; }
     public string? ListId { get; init; }
     public DateOnly? ScheduledDate { get; init; }
     public bool IsChecklist { get; init; }
@@ -35,6 +36,7 @@ public record RecurringTask
 {
     public string Id { get; init; } = Guid.NewGuid().ToString("N");
     public string Title { get; init; } = "";
+    public string? Description { get; init; }
     public bool IsChecklist { get; init; }
     public Subtask[] Subtasks { get; init; } = [];
     public RecurrenceKind Kind { get; init; }
@@ -54,7 +56,7 @@ public record OccurrenceCompletion
 
 public record PlannerData
 {
-    public int SchemaVersion { get; init; } = 2;
+    public int SchemaVersion { get; init; } = 3;
     public TaskList[] Lists { get; init; } = [new() { Id = PlannerStore.GeneralListId, Name = "General" }];
     public TaskItem[] Tasks { get; init; } = [];
     public RecurringTask[] RecurringTasks { get; init; } = [];

@@ -9,6 +9,7 @@ Doing it is a personal Android to-do app for organizing today's tasks, persisten
 - Three bottom navigation destinations: Home, Recurring, and Lists.
 - Home contains tasks for the local calendar date plus all personal lists.
 - Task completion hides active rows; completed popups support Undo.
+- Required two-line task titles, optional unlimited descriptions, and read-only details popups that keep the app visible behind them.
 - Daily, selected-weekday, and selected-day/selected-month recurrence; routines can be edited or paused.
 - Shared month/week calendar for dated tasks and routine occurrences.
 - Permanent General list, custom named lists, task/list editing.

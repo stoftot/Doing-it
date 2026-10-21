@@ -6,6 +6,7 @@ public sealed class TaskEditorPage : EditorPage
 {
     private readonly PlannerStore _store;
     private readonly TaskItem? _existing;
+    private readonly Editor _title;
     private readonly Editor _description;
     private readonly SubtaskEditor _subtasks;
     private readonly Picker _lists;
@@ -22,7 +23,8 @@ public sealed class TaskEditorPage : EditorPage
         _store = store;
         _existing = existing;
         _scheduled = existing is not null ? existing.ScheduledDate.HasValue : date.HasValue;
-        _description = Ui.Description(existing?.Title ?? "");
+        _title = Ui.TitleEditor(existing?.Title ?? "");
+        _description = Ui.Description(existing?.Description ?? "");
         _lists = new Picker
         {
             Title = "Choose a list",
@@ -46,7 +48,8 @@ public sealed class TaskEditorPage : EditorPage
             AutomationId = "TaskDatePicker"
         };
         Body.Add(Ui.Text("One small thing, written down.", 14, Ui.Muted));
-        Body.Add(Ui.Field("TASK DESCRIPTION", Ui.Card(_description)));
+        Body.Add(Ui.TitleField(_title));
+        Body.Add(Ui.Field("DESCRIPTION (OPTIONAL)", Ui.Card(_description)));
         _subtasks = new SubtaskEditor(existing?.IsChecklist ?? false, existing?.Subtasks ?? [], existing is not null);
         Body.Add(_subtasks);
         _listMode = Ui.Button("In a list", () => SetMode(false), false, "ChooseListMode");
@@ -88,7 +91,8 @@ public sealed class TaskEditorPage : EditorPage
     protected override Task Persist() => _store.SaveTaskAsync(new TaskItem
     {
         Id = _existing?.Id ?? Guid.NewGuid().ToString("N"),
-        Title = _description.Text ?? "",
+        Title = _title.Text ?? "",
+        Description = _description.Text,
         IsChecklist = _subtasks.IsChecklist,
         Subtasks = _subtasks.Subtasks,
         ListId = _scheduled ? null : (_lists.SelectedItem as TaskList)?.Id,

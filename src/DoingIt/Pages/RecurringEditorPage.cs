@@ -7,6 +7,7 @@ public sealed class RecurringEditorPage : EditorPage
 {
     private readonly PlannerStore _store;
     private readonly RecurringTask? _existing;
+    private readonly Editor _title;
     private readonly Editor _description;
     private readonly SubtaskEditor _subtasks;
     private readonly ContentView _options = new();
@@ -25,9 +26,11 @@ public sealed class RecurringEditorPage : EditorPage
         _weekDays = existing is { WeekDays.Length: > 0 } ? [.. existing.WeekDays] : [DateTime.Today.DayOfWeek];
         _monthDays = existing is { MonthDays.Length: > 0 } ? [.. existing.MonthDays] : [DateTime.Today.Day];
         _months = existing is { Months.Length: > 0 } ? [.. existing.Months] : [.. Enumerable.Range(1, 12)];
-        _description = Ui.Description(existing?.Title ?? "");
+        _title = Ui.TitleEditor(existing?.Title ?? "");
+        _description = Ui.Description(existing?.Description ?? "");
         Body.Add(Ui.Text("Give the good habits a place to grow.", 14, Ui.Muted));
-        Body.Add(Ui.Field("TASK DESCRIPTION", Ui.Card(_description)));
+        Body.Add(Ui.TitleField(_title));
+        Body.Add(Ui.Field("DESCRIPTION (OPTIONAL)", Ui.Card(_description)));
         _subtasks = new SubtaskEditor(existing?.IsChecklist ?? false, existing?.Subtasks ?? [], existing is not null);
         Body.Add(_subtasks);
         var modes = new Grid { ColumnDefinitions = [new(GridLength.Star), new(GridLength.Star), new(GridLength.Star)], ColumnSpacing = 7 };
@@ -111,7 +114,8 @@ public sealed class RecurringEditorPage : EditorPage
     protected override Task Persist() => _store.SaveRecurringAsync(new RecurringTask
     {
         Id = _existing?.Id ?? Guid.NewGuid().ToString("N"),
-        Title = _description.Text ?? "",
+        Title = _title.Text ?? "",
+        Description = _description.Text,
         IsChecklist = _subtasks.IsChecklist,
         Subtasks = _subtasks.Subtasks,
         Kind = _kind,
