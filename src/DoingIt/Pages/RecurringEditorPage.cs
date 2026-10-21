@@ -30,9 +30,9 @@ public sealed class RecurringEditorPage : EditorPage
         _description = Ui.Description(existing?.Description ?? "");
         Body.Add(Ui.Text("Give the good habits a place to grow.", 14, Ui.Muted));
         Body.Add(Ui.TitleField(_title));
-        Body.Add(Ui.Field("DESCRIPTION (OPTIONAL)", Ui.Card(_description)));
         _subtasks = new SubtaskEditor(existing?.IsChecklist ?? false, existing?.Subtasks ?? [], existing is not null);
         Body.Add(_subtasks);
+        Body.Add(Ui.Field("DESCRIPTION (OPTIONAL)", Ui.Card(_description)));
         var modes = new Grid { ColumnDefinitions = [new(GridLength.Star), new(GridLength.Star), new(GridLength.Star)], ColumnSpacing = 7 };
         var kinds = new[] { RecurrenceKind.Daily, RecurrenceKind.Weekly, RecurrenceKind.Monthly };
         for (var i = 0; i < kinds.Length; i++)

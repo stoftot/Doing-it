@@ -12,7 +12,7 @@
 | `src/DoingIt/Pages/NotificationSettingsPage.cs` | Daily/sticky preferences and Android permission status |
 | `src/DoingIt/Pages/EditorPage.cs` | Shared save/error/modal form handling |
 | `src/DoingIt/Pages/TaskDetailsOverlay.cs` | Read-only task information card and dismissible backdrop |
-| `src/DoingIt/Pages/ChecklistPage.cs`, `SubtaskEditor.cs` | Checklist popup, per-date checking and draft subtask forms |
+| `src/DoingIt/Pages/ChecklistPage.cs`, `SubtaskEditor.cs` | Checklist page, per-date checking and draft item forms |
 | `src/DoingIt/Ui.cs`, `Resources/` | Palette, native UI building blocks, fonts and vector icons |
 | `src/DoingIt/Platforms/Android/` | Android activity, manifest and theme |
 | `src/DoingIt/Platforms/Android/TaskTitleLayout.cs` | Native two-line title measurement for saves and migration |
@@ -21,7 +21,7 @@
 | `src/DoingIt.Core/DailyNotification.cs` | Remaining-task summary and DST-aware local-midnight calculation |
 | `src/DoingIt.Core/` | Domain records, date queries, validation and atomic JSON storage |
 | `tests/DoingIt.Core.Tests/` | xUnit domain and file-storage regression tests |
-| `tests/android/TaskDetails.ps1` | Managed Appium regression suite for task text and read-only popups |
+| `tests/android/TaskDetails.ps1` | Managed Appium regressions for task text, read-only popups and checklist entry/editing/progress |
 | `tests/android/DailyNotifications.ps1`, `tests/manual/notifications.md` | Managed notification regression suite and device/background cases |
 | `tests/manual/planner.md` | Reusable Android interaction cases |
 | `tooling/build-android.ps1` | Native Android build with Windows Unicode-path workaround |

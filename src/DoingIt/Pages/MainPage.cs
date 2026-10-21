@@ -251,7 +251,11 @@ public sealed class MainPage : ContentPage
 
     internal static View ChecklistRow(DueTask task, Func<Task> open, Func<Task> details)
     {
-        var text = Ui.Stack(Ui.TaskTitle(task.Title, details), Ui.Quiet(task.ProgressLabel, open));
+        var progress = Ui.Quiet(task.ProgressLabel + "  ›", open);
+        progress.HorizontalOptions = LayoutOptions.Start;
+        progress.BackgroundColor = Ui.Pale;
+        SemanticProperties.SetDescription(progress, $"Open {task.Title}, {task.ProgressLabel}");
+        var text = Ui.Stack(Ui.TaskTitle(task.Title, details), progress);
         text.Spacing = 3;
         if (task.IsRecurring) text.Add(Ui.Text("Recurring", 10, Ui.Muted));
         var row = new Grid { ColumnDefinitions = [new(GridLength.Auto), new(GridLength.Star)], ColumnSpacing = 8, Padding = new Thickness(0, 8) };

@@ -49,9 +49,9 @@ public sealed class TaskEditorPage : EditorPage
         };
         Body.Add(Ui.Text("One small thing, written down.", 14, Ui.Muted));
         Body.Add(Ui.TitleField(_title));
-        Body.Add(Ui.Field("DESCRIPTION (OPTIONAL)", Ui.Card(_description)));
         _subtasks = new SubtaskEditor(existing?.IsChecklist ?? false, existing?.Subtasks ?? [], existing is not null);
         Body.Add(_subtasks);
+        Body.Add(Ui.Field("DESCRIPTION (OPTIONAL)", Ui.Card(_description)));
         _listMode = Ui.Button("In a list", () => SetMode(false), false, "ChooseListMode");
         _dateMode = Ui.Button("On a date", () => SetMode(true), false, "ChooseDateMode");
         var modes = new Grid { ColumnDefinitions = [new(GridLength.Star), new(GridLength.Star)], ColumnSpacing = 8 };

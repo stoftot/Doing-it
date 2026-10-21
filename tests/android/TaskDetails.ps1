@@ -97,6 +97,31 @@ function Replace-InputText([string]$Id,[string]$Text) {
     $element
 }
 
+function Type-SubtaskAndNext([string]$Text) {
+    $input = Find-XPath "(//android.widget.EditText[starts-with(@resource-id, 'com.doingit.app:id/SubtaskTitle')])[last()]"
+    Click-Element $input
+    Invoke-Driver 'POST' "/element/$input/value" @{ text = $Text; value = @($Text.ToCharArray() | ForEach-Object { [string]$_ }) } | Out-Null
+    Invoke-Driver 'POST' '/execute/sync' @{ script = 'mobile: performEditorAction'; args = @(@{ action = 'next' }) } | Out-Null
+    Start-Sleep -Milliseconds 300
+}
+
+function Set-LastSubtaskText([string]$Text) {
+    $input = Find-XPath "(//android.widget.EditText[starts-with(@resource-id, 'com.doingit.app:id/SubtaskTitle')])[last()]"
+    Invoke-Driver 'POST' "/element/$input/clear" @{} | Out-Null
+    Invoke-Driver 'POST' "/element/$input/value" @{ text = $Text; value = @($Text.ToCharArray() | ForEach-Object { [string]$_ }) } | Out-Null
+}
+
+function Set-FirstSubtaskText([string]$Text) {
+    $input = Find-XPath "(//android.widget.EditText[starts-with(@resource-id, 'com.doingit.app:id/SubtaskTitle')])[1]"
+    Invoke-Driver 'POST' "/element/$input/clear" @{} | Out-Null
+    Invoke-Driver 'POST' "/element/$input/value" @{ text = $Text; value = @($Text.ToCharArray() | ForEach-Object { [string]$_ }) } | Out-Null
+}
+
+function Checklist-Progress([string]$Expected,[string]$Message) {
+    $actual = Get-Text (Find-ById 'ChecklistProgress')
+    Assert-True ($actual -ceq $Expected) "$Message Expected '$Expected', got '$actual'."
+}
+
 function Get-PageSource {
     [string](Invoke-Driver 'GET' '/source').value
 }
@@ -311,6 +336,7 @@ try {
     Assert-True ($longDescription.Length -gt 250) 'The task details fixture must exceed 250 characters.'
     Assert-True ($routineDescription.Length -gt 250) 'The recurring details fixture must exceed 250 characters.'
 
+    [void](Find-ById 'TabHome')
     Ensure-MainPage
     Click-ById 'TabLists'
     Save-NewTask $listTitle $longDescription $false
@@ -405,8 +431,10 @@ try {
     Click-ById 'CreateTask'
     Replace-InputText 'TaskTitle' $checklistTitle | Out-Null
     Click-ById 'ChecklistTaskType'
-    $subtask = Find-XPath "//android.widget.EditText[starts-with(@resource-id, 'com.doingit.app:id/SubtaskTitle')]"
-    Invoke-Driver 'POST' "/element/$subtask/value" @{text='First item'} | Out-Null
+    Type-SubtaskAndNext 'Book ticket'
+    Type-SubtaskAndNext 'Pack bag'
+    Type-SubtaskAndNext 'Check weather'
+    Save-Probe '10c-checklist-editor-three-items-and-blank-draft' | Out-Null
     $script:createdTasks.Add([pscustomobject]@{Title=$checklistTitle; Kind='checklist'})
     Click-ById 'SaveTask'
     [void](Find-ById 'TabLists')
@@ -414,7 +442,77 @@ try {
     Assert-OverlayBounds (Save-Probe '10b-checklist-read-only-details')
     Close-Details
     Click-Element (Find-XPath "//*[@content-desc='Open $checklistTitle']")
-    Assert-Contains (Get-Text (Find-ById 'ChecklistProgress')) '0 of 1 done' 'Opening checklist details changed its progress or broke the separate checklist control.'
+    Save-Probe '10d-checklist-open' | Out-Null
+    Checklist-Progress '0 of 3 done' 'Opening checklist details changed the expected checklist size or broke the separate checklist control.'
+    $secondItem = Find-ByText 'Pack bag'
+    Click-Element $secondItem
+    Checklist-Progress '1 of 3 done' 'Tapping a subtask label did not update checklist progress.'
+    Click-Element (Find-XPath "//*[@content-desc='Complete Book ticket']")
+    Checklist-Progress '2 of 3 done' 'Tapping a checkbox did not update checklist progress.'
+    $thirdCheck = Find-XPath "//*[@content-desc='Complete Check weather']"
+    Click-Element $thirdCheck
+    Checklist-Progress '3 of 3 done' 'Completing the final subtask did not update checklist progress.'
+    Assert-Contains (Get-PageSource) 'All done' 'A fully completed checklist did not show its all-done hint.'
+    Click-ById 'CloseChecklist'
+    Click-ById 'CompletedGeneral'
+    Click-Element (Find-XPath "//*[@content-desc='Open $checklistTitle']")
+    Checklist-Progress '3 of 3 done' 'Reopening the checklist lost its completed state.'
+    $thirdCheck = Find-XPath "//*[@content-desc='Reopen Check weather']"
+    Click-Element $thirdCheck
+    Checklist-Progress '2 of 3 done' 'Unchecking one item did not reduce progress and reopen the task.'
+    Click-ById 'EditChecklist'
+    Replace-InputText 'TaskTitle' "$checklistTitle-READY" | Out-Null
+    Set-FirstSubtaskText 'Reserve ticket'
+    [void](Find-ScrollableText '+  Add item')
+    Click-ByText '+  Add item'
+    Set-LastSubtaskText 'Cancel this draft'
+    Click-Element (Find-XPath "//*[@content-desc='Close']")
+    Click-ById 'CloseChecklist'
+    Click-Element (Find-XPath "//*[@content-desc='Open $checklistTitle']")
+    Assert-Contains (Get-PageSource) $checklistTitle 'Canceling checklist edits saved an unsaved task title.'
+    Assert-NotContains (Get-PageSource) "$checklistTitle-READY" 'Canceling checklist edits saved an unsaved task title.'
+    Assert-Contains (Get-PageSource) 'Book ticket' 'Canceling checklist item edits changed the saved item title.'
+    Assert-NotContains (Get-PageSource) 'Cancel this draft' 'Canceling checklist item edits saved an unsaved item.'
+    Checklist-Progress '2 of 3 done' 'Canceling checklist item edits changed saved progress.'
+    Click-ById 'EditChecklist'
+    Replace-InputText 'TaskTitle' "$checklistTitle-READY" | Out-Null
+    Set-FirstSubtaskText 'Reserve ticket'
+    Click-Element (Find-XPath "//*[@content-desc='Remove item Pack bag']")
+    [void](Find-ScrollableText '+  Add item')
+    Click-ByText '+  Add item'
+    Set-LastSubtaskText 'Share itinerary'
+    Click-ByText 'Save changes'
+    [void](Find-ById 'ChecklistProgress')
+    $checklistTitle = "$checklistTitle-READY"
+    $script:createdTasks[$script:createdTasks.Count - 1].Title = $checklistTitle
+    Assert-Contains (Get-PageSource) $checklistTitle 'Saving the checklist edit did not preserve the task title change.'
+    Assert-Contains (Get-PageSource) 'Reserve ticket' 'Saving an item rename did not update its title.'
+    Assert-Contains (Get-PageSource) 'Share itinerary' 'Saving a new checklist item did not update its membership.'
+    Assert-NotContains (Get-PageSource) 'Pack bag' 'Removing a checklist item did not update its membership.'
+    Checklist-Progress '1 of 3 done' 'Saving checklist edits did not preserve matching item progress.'
+    Click-ById 'EditChecklist'
+    for ($item = 1; $item -le 9; $item++) {
+        [void](Find-ScrollableText '+  Add item')
+        Click-ByText '+  Add item'
+        Set-LastSubtaskText "Extra item $item"
+    }
+    Click-ByText 'Save changes'
+    [void](Find-ById 'ChecklistProgress')
+    $scroll = Find-ById 'ChecklistScroll'
+    Invoke-Driver 'POST' '/execute/sync' @{ script = 'mobile: scrollGesture'; args = @(@{ elementId = $scroll; direction = 'down'; percent = 0.8 }) } | Out-Null
+    $lastLabel = Find-ScrollableText 'Extra item 9'
+    $beforeRect = (Invoke-Driver 'GET' "/element/$lastLabel/rect").value
+    Click-Element $lastLabel
+    $sameLastLabel = Find-XPath "//*[@text='Extra item 9']"
+    $afterRect = (Invoke-Driver 'GET' "/element/$sameLastLabel/rect").value
+    Assert-True ([int]$beforeRect.y -eq [int]$afterRect.y) 'Toggling a visible item in a long checklist moved the scroll position.'
+    Assert-True ($null -ne (Try-FindById 'ChecklistScroll')) 'The checklist scroll container disappeared after toggling a visible item.'
+    $scroll = Find-ById 'ChecklistScroll'
+    for ($attempt = 0; $attempt -lt 8; $attempt++) {
+        $moved = Invoke-Driver 'POST' '/execute/sync' @{ script = 'mobile: scrollGesture'; args = @(@{ elementId = $scroll; direction = 'up'; percent = 0.9 }) }
+        if (-not $moved.value) { break }
+    }
+    Checklist-Progress '2 of 12 done' 'Toggling a lower checklist item did not preserve accurate progress.'
     Click-ById 'CloseChecklist'
 
     Write-Host "PASS task details and overlay assertions on $($context.AvdName) ($($context.Serial)); fixtures $runId."
