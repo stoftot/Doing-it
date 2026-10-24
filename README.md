@@ -79,6 +79,6 @@ privacy, system-trace limits and test procedures.
 - `tests/DoingIt.Core.Tests`: deterministic scheduling and storage tests.
 - [Device regression cases](tests/manual/planner.md).
 - [Shared Android test integration](docs/android-testing.md) and [verification scope](docs/verification.md#android-project-verification).
-- [Pending release](releases/0.1.0.md).
+- [Release 0.1.0](releases/0.1.0.md).
 
 The repository retains the [.NET and MAUI development workflows](docs/ai/README.md). Shared machine tools are managed separately from this project.
